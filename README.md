@@ -1,6 +1,6 @@
-# mazerunner (Ivan et Hélène)
+# Projet Info 3D : The Maze Runner
 
-## rendu: 1juin 2023
+## DeadLine: 1er juin 2023
 
 ## liste des tâches: 
 
@@ -60,3 +60,54 @@ hélène:
 ivan: 
 
 hélène: 
+
+## A l'intention de ma chère Hélène : 
+Pour que tout ce passe bien je te suggère d'effectuer les étapes suivantes pendant la phase de configuration.
+
+
+### En ce qui concerne le projet
+1. Faire un `pull` (maj le repos local)
+2. Dans les fichiers `maze_runner\Makefile` et `maze_runner\scripts\Makefile_emscripten` Tu dois changer 
+```PATH_TO_CGP = ../cgp/library/```
+En 
+```PATH_TO_CGP = [your path]/cgp/library/```
+3. Dans le fichier `maze_runner\CMakeList.txt` pareil il faudrait changer 
+```
+set(PATH_TO_CGP "../cgp/library/" CACHE PATH "Relative path to CGP library location") 
+```
+En 
+```
+set(PATH_TO_CGP "[your path]/cgp/library/" CACHE PATH "Relative path to CGP library location") 
+```
+4. Là tu peux faire comme on fait d'habitude chaque fois qu'on a un nouveau TD. Comme le rappel profite au croyant : 
+* Ouvrir **CMake**
+* Remplir le champ **Where is the source code** avec le path du dossier maze_runner disons `path\maze_runner`
+* Remplir le champ **Where to build the binaries** avec `path\maze_runner\build`
+* Cliquer sur **Configure**, etc...
+Là on devrait être bons et avoir la même structure du dossier `maze_runner`.
+
+### Pour le dev en local
+1. Créer une branche pout toi soit sur l'interface graphique soit en utilisant
+```
+git branch helene
+git checkout helene
+git pull origin helene
+git merge helene
+git commit -m "Fusion des branches locale et distante"
+git push --set-upstream origin helene
+```
+
+> Note :
+Il y aura peut-être des conflits après la commande `merge`. Il faudra les résoudre à la main.
+
+2. Faire un rebase (aligner ta branche avec la branche main) soit grâce à l'interface graphique soit en utilisant
+```
+git rebase mainn
+```
+3. Coder ...
+
+### Pour le push suivant..
+Il faudrait changer le fait que tu puisses directement télécharger tes modifications dans la branche main
+```
+git push --set-upstream origin helene
+```
