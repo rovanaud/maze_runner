@@ -105,3 +105,9 @@ Il y aura peut-être des conflits après la commande `merge`. Il faudra les résoud
 git rebase mainn
 ```
 3. Coder ...
+
+### Pour le push suivant..
+Il faudrait changer le fait que tu puisses directement télécharger tes modifications dans la branche main
+```
+git push --set-upstream origin helene
+```
