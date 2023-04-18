@@ -49,6 +49,9 @@ struct scene_structure : cgp::scene_inputs_generic {
 	// tree and mushrooms positions
 	std::vector<cgp::vec3> tree_positions;
 
+	//cgp::mesh_drawable maze;
+	cgp::mesh_drawable maze;
+
 	// ****************************** //
 	// Functions
 	// ****************************** //
