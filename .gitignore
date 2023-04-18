@@ -35,11 +35,12 @@
 Makefile
 CMakeLists.txt
 imgui.ini
-#maze_runner.pdb
+maze_runner.pdb
+CMakeSettings.json
 
 # Compilation folders
 build
 out
 #scripts
-#.vs
+.vs
 
