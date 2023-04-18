@@ -95,3 +95,9 @@ git checkout helene
 git rebase mainn
 ```
 3. Coder ...
+
+### Pour le push suivant..
+Il faudrait changer le fait que tu puisses directement télécharger tes modifications dans la branche main
+```
+git push --set-upstream origin helene
+```
