@@ -31,4 +31,16 @@
 *.out
 *.app
 
+#Environment configuration
+Makefile
+CMakeLists.txt
+imgui.ini
+maze_runner.pdb
+CMakeSettings.json
+
+# Compilation folders
+build
+out
+#scripts
 .vs
+
