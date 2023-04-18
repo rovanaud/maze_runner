@@ -1,6 +1,6 @@
-# mazerunner (Ivan et Hélène)
+# Projet Informatique graphique 3D : The Maze Runner
 
-## rendu: 1juin 2023
+## DeadLine: 1er juin 2023
 
 ## liste des tâches: 
 
@@ -60,3 +60,19 @@ hélène:
 ivan: 
 
 hélène: 
+
+## A l'intention de ma chère Hélène : 
+Pour que tout ce passe bien je te suggère d'effectuer les étapes suivantes pendant la phase de configuration.
+
+1. Faire un `pull` (maj le repos local)
+2. Dans les fichiers `maze_runner\Makefile` et `maze_runner\scripts\Makefile_emscripten` Tu dois changer 
+```PATH_TO_CGP = ../../cgp/library/```
+En 
+```PATH_TO_CGP = [new path]/cgp/library/```
+3. Dans le fichier `maze_runner\CMakeList.txt` pareil il faudrait changer 
+```set(PATH_TO_CGP "../../cgp/library/" CACHE PATH "Relative path to CGP library location") 
+```
+En 
+```set(PATH_TO_CGP "[new path]/cgp/library/" CACHE PATH "Relative path to CGP library location") 
+```
+4. Dans le fichier 
