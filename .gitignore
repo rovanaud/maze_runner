@@ -30,3 +30,16 @@
 *.exe
 *.out
 *.app
+
+#Environment configuration
+Makefile
+CMakeLists.txt
+imgui.ini
+#maze_runner.pdb
+
+# Compilation folders
+build
+out
+#scripts
+#.vs
+
