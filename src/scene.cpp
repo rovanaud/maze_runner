@@ -42,6 +42,8 @@ void scene_structure::initialize()
 
 	mesh const mushroom_mesh = create_mushroom();
 	mushroom.initialize_data_on_gpu(mushroom_mesh);
+
+
 	std::vector<std::vector<cgp::vec2>> test_set;
 	for (int i = 0; i < 10; i++) {
 		std::vector<cgp::vec2> test;
@@ -51,7 +53,7 @@ void scene_structure::initialize()
 		test_set.push_back(test);
 	}
 	
-	mesh maze_mesh = create_maze(test_set, .5, 0.01);
+	mesh maze_mesh = create_maze(test_set, .5f, 0.01f);
 	maze.initialize_data_on_gpu(maze_mesh);
 
 
