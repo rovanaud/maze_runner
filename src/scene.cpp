@@ -67,6 +67,7 @@ void scene_structure::initialize()
 	maze.initialize_data_on_gpu(maze_mesh);
 
 
+
 }
 
 
