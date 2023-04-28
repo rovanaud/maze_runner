@@ -21,13 +21,13 @@
 
 ivan: générer scène vierge + terrain 
 
-hélène: générer position aléatoire des murs + position personnage 
+hélène: générer position aléatoire des murs (done) + position personnage 
 
 ## 25/04/2023: 
 
 ivan: génération graphique des murs sur position avec texture 
 
-hélène: interruptions clavier et mise à jour de la position personnage
+hélène: interruptions clavier (done) et mise à jour de la position personnage
 
 ## vacances: 
 

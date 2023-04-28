@@ -4,6 +4,30 @@
 #include "cgp/cgp.hpp"
 #include "environment.hpp"
 
+//*******************//
+// MAZE 
+//******************// 
+
+
+const int WIDTH = 20;
+const int HEIGHT = 20;
+
+enum Direction { UP, DOWN, LEFT, RIGHT };
+
+struct Cell;
+struct Player; 
+
+int startRow; 
+int startCol; 
+
+void initMaze(Cell maze[][WIDTH]);
+bool allvisited(Cell maze[][WIDTH]);
+bool inBounds(int row, int col);
+void removeWall(Cell maze[][WIDTH], int row, int col, Direction dir);
+void generateMaze(Cell maze[][WIDTH]);
+void printMaze(Cell maze[][WIDTH]);
+
+
 
 // This definitions allow to use the structures: mesh, mesh_drawable, etc. without mentionning explicitly cgp::
 using cgp::mesh;
