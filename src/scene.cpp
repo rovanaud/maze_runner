@@ -2,6 +2,7 @@
 
 #include "terrain.hpp"
 #include "tree.hpp"
+#include "draw_walls.hpp"
 
 #include <iostream>
 #include <stack>
@@ -160,6 +161,17 @@ void scene_structure::initialize()
 
 	mesh const mushroom_mesh = create_mushroom();
 	mushroom.initialize_data_on_gpu(mushroom_mesh);
+	std::vector<std::vector<cgp::vec2>> test_set;
+	for (int i = 0; i < 10; i++) {
+		std::vector<cgp::vec2> test;
+		for (int j = 10; j < 12; j++) {
+			test.push_back(cgp::vec2(i, j));
+		}
+		test_set.push_back(test);
+	}
+	
+	mesh maze_mesh = create_maze(test_set, .5, 0.01);
+	maze.initialize_data_on_gpu(maze_mesh);
 
 	srand(time(0));
 	Cell maze[HEIGHT][WIDTH];
@@ -182,9 +194,12 @@ void scene_structure::display_frame()
 	if (gui.display_frame)
 		draw(global_frame, environment);
 
-	draw(terrain, environment);
-	if (gui.display_wireframe)
-		draw_wireframe(terrain, environment);
+	//draw(terrain, environment);
+	draw(maze, environment);
+	if (gui.display_wireframe){
+		//draw_wireframe(terrain, environment);
+		draw_wireframe(maze, environment);
+	}
 
   /*
 	draw(cylinder, environment);
