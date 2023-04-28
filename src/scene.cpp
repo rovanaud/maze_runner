@@ -66,7 +66,6 @@ void scene_structure::initialize()
 	mesh maze_mesh = create_maze(test_set, .8f, 0.1f); //draw_wall(p1, p2, h, e); 
 	maze.initialize_data_on_gpu(maze_mesh);
 
-
 }
 
 
