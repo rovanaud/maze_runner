@@ -66,21 +66,6 @@ void scene_structure::initialize()
 	mesh maze_mesh = create_maze(test_set, .8f, 0.1f); //draw_wall(p1, p2, h, e); 
 	maze.initialize_data_on_gpu(maze_mesh);
 
-
-
-	std::vector<std::vector<cgp::vec2>> test_set;
-	for (int i = 0; i < 10; i++) {
-		std::vector<cgp::vec2> test;
-		for (int j = 10; j < 12; j++) {
-			test.push_back(cgp::vec2(i, j));
-		}
-		test_set.push_back(test);
-	}
-	
-	mesh maze_mesh = create_maze(test_set, .5f, 0.01f);
-	maze.initialize_data_on_gpu(maze_mesh);
-
-
 }
 
 
