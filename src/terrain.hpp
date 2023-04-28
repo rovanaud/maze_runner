@@ -2,7 +2,6 @@
 
 #include "cgp/cgp.hpp"
 
-
 float evaluate_terrain_height(float x, float y);
 
 /** Compute a terrain mesh 
@@ -13,3 +12,4 @@ float evaluate_terrain_height(float x, float y);
 cgp::mesh create_terrain_mesh(int N, float length);
 
 std::vector<cgp::vec3> generate_positions_on_terrain(int N, float terrain_length);
+
