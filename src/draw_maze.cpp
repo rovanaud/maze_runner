@@ -48,7 +48,8 @@ mesh create_maze(std::vector<std::vector<cgp::vec2>> points, float heigh, float 
 	//std::cout << "Maze created" << std::endl;
 	maze.apply_translation_to_position( vec3({ -max_x / 2, -max_y / 2, 0 }) );
 	mesh ground = mesh_primitive_quadrangle(vec3(-max_x / 2, -max_y / 2, 0), vec3(max_x / 2, -max_y / 2, 0), vec3(max_x / 2, max_y / 2, 0), vec3(-max_x / 2, max_y / 2, 0));
-	ground.set_color(vec3(0.9f, 0.5f, 0.01f));
+	// ground.set_color(vec3(0.9f, 0.5f, 0.01f));
+	ground.color.fill({ 0.9f, 0.5f, 0.01f });
 	maze.push_back(ground);
 
 	return maze;
