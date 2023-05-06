@@ -1,4 +1,4 @@
-#include "draw_walls.hpp"
+#include "draw_maze.hpp"
 
 using namespace cgp;
 
@@ -30,16 +30,26 @@ mesh draw_wall(vec2 p1, vec2 p2, float h, float e) {
 	wall.push_back(mesh_primitive_quadrangle(s3, s4, s8, s7));
 	wall.push_back(mesh_primitive_quadrangle(s4, s1, s5, s8));
 
-	std::cout <<  "Wall created" << std::endl;
+	//std::cout <<  "Wall created" << std::endl;
 
 	return wall;	
 }
 
 mesh create_maze(std::vector<std::vector<cgp::vec2>> points, float heigh, float e) {
 	mesh maze;
+	float max_x = -std::round_toward_neg_infinity;
+	float max_y = -std::round_toward_neg_infinity;
 	for (auto pair : points) {
 		maze.push_back(draw_wall(pair[0], pair[1], heigh, e));
+		max_x = std::max(max_x, std::max(pair[0].x, pair[1].x));
+		max_y = std::max(max_y, std::max(pair[0].y, pair[1].y));
 	}
-	std::cout << "Maze created" << std::endl;
+	
+	//std::cout << "Maze created" << std::endl;
+	maze.apply_translation_to_position( vec3({ -max_x / 2, -max_y / 2, 0 }) );
+	mesh ground = mesh_primitive_quadrangle(vec3(-max_x / 2, -max_y / 2, 0), vec3(max_x / 2, -max_y / 2, 0), vec3(max_x / 2, max_y / 2, 0), vec3(-max_x / 2, max_y / 2, 0));
+	ground.set_color(vec3(0.9f, 0.5f, 0.01f));
+	maze.push_back(ground);
+
 	return maze;
 }
