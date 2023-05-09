@@ -15,10 +15,6 @@ const int HEIGHT = 20;
 enum Direction { UP, DOWN, LEFT, RIGHT };
 
 struct Cell;
-struct Player; 
-
-int startRow; 
-int startCol; 
 
 void initMaze(Cell maze[][WIDTH]);
 bool allvisited(Cell maze[][WIDTH]);

@@ -18,16 +18,6 @@ struct Cell {
     bool walls[4];
 };
 
-struct Player {
-    Cell pos;
-};
-
-//
-// mur sup: wall[1]
-// mur inf: wall[0]
-// mur gauche: wall[3]
-// mur droite: wall[2]
-//
 
 void initMaze(Cell maze[][WIDTH]) {
     for (int i = 0; i < HEIGHT; i++) {
@@ -79,8 +69,8 @@ void removeWall(Cell maze[][WIDTH], int row, int col, Direction dir) {
 
 void generateMaze(Cell maze[][WIDTH]) {
     stack<pair<int, int>> cells;
-    startRow = rand() % HEIGHT;
-    startCol = rand() % WIDTH;
+    int startRow = rand() % HEIGHT;
+    int startCol = rand() % WIDTH;
     cells.push(make_pair(startRow, startCol));
     maze[startRow][startCol].visited = true;
     while (!cells.empty() && !allvisited(maze)) {
