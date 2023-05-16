@@ -3,27 +3,7 @@
 
 #include "cgp/cgp.hpp"
 #include "environment.hpp"
-
-//*******************//
-// MAZE 
-//******************// 
-
-
-const int WIDTH = 20;
-const int HEIGHT = 20;
-
-enum Direction { UP, DOWN, LEFT, RIGHT };
-
-struct Cell;
-
-void initMaze(Cell maze[][WIDTH]);
-bool allvisited(Cell maze[][WIDTH]);
-bool inBounds(int row, int col);
-void removeWall(Cell maze[][WIDTH], int row, int col, Direction dir);
-void generateMaze(Cell maze[][WIDTH]);
-void printMaze(Cell maze[][WIDTH]);
-
-
+#include "camera.hpp"
 
 // This definitions allow to use the structures: mesh, mesh_drawable, etc. without mentionning explicitly cgp::
 using cgp::mesh;
@@ -48,6 +28,10 @@ struct scene_structure : cgp::scene_inputs_generic {
 	camera_projection_perspective camera_projection;
 	window_structure window;
 
+	//camera_controller_first_person camera_controller_first_person;
+	maze_camera_controller camera_controller_first_person;
+	//camera_controller_first_person_euler
+
 	mesh_drawable global_frame;          // The standard global frame
 	environment_structure environment;   // Standard environment controler
 	input_devices inputs;                // Storage for inputs status (mouse, keyboard, window dimension)
@@ -57,24 +41,17 @@ struct scene_structure : cgp::scene_inputs_generic {
 	// Elements and shapes of the scene
 	// ****************************** //
 
-	cgp::mesh_drawable terrain;
-	//cgp::mesh_drawable cylinder;
-
-	//cgp::mesh_drawable tree;
-	cgp::mesh_drawable tree;
-
-	// cgp::mesh_drawable mushroom;
-	cgp::mesh_drawable mushroom;
-
-	// tree and mushrooms positions
-	std::vector<cgp::vec3> tree_positions;
-
 	//cgp::mesh_drawable maze;
 	cgp::mesh_drawable maze;
 
+	cgp::mesh_drawable player;
+
+	cgp::hierarchy_mesh_drawable hierarchy;
 	// ****************************** //
 	// Functions
 	// ****************************** //
+
+	bool first_person = true;
 
 	void initialize();    // Standard initialization to be called before the animation loop
 	void display_frame(); // The frame display to be called within the animation loop
