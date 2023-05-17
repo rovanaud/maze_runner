@@ -53,6 +53,8 @@ struct scene_structure : cgp::scene_inputs_generic {
 
 	bool first_person = true;
 
+	timer_basic timer;
+
 	void initialize();    // Standard initialization to be called before the animation loop
 	void display_frame(); // The frame display to be called within the animation loop
 	void display_gui();   // The display of the GUI, also called within the animation loop

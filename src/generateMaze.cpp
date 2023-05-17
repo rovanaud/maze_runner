@@ -1,10 +1,10 @@
 #include "generateMaze.hpp"
 
 //
-// mur sup: wall[1]
-// mur inf: wall[0]
-// mur gauche: wall[3]
-// mur droite: wall[2]
+// mur inf: wall[1]
+// mur sup: wall[0]
+// mur droite: wall[3]
+// mur gauche: wall[2]
 //
 
 using namespace std;

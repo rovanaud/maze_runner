@@ -33,9 +33,6 @@ void maze_camera_controller::action_mouse_move(mat4& camera_matrix_view)
 	camera_matrix_view = camera_model.matrix_view();
 }
 
-
-
-
 void maze_camera_controller::action_keyboard(mat4&)
 {
 	if (inputs->keyboard.last_action.is_pressed(GLFW_KEY_C) && inputs->keyboard.shift) {
@@ -45,13 +42,13 @@ void maze_camera_controller::action_keyboard(mat4&)
 		else
 			glfwSetInputMode(window->glfw_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	}
+
 	// Escape also gives back the cursor
 	if (inputs->keyboard.last_action.is_pressed(GLFW_KEY_ESCAPE)) {
 		is_cursor_trapped = false;
 		glfwSetInputMode(window->glfw_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	}
 }
-
 
 void maze_camera_controller::idle_frame(mat4& camera_matrix_view)
 {
@@ -68,15 +65,30 @@ void maze_camera_controller::idle_frame(mat4& camera_matrix_view)
 
 	//   front/back
 	if (inputs->keyboard.is_pressed(GLFW_KEY_W))
+	{
+		std::cout << "before : " << player->model.translation << " and " << camera_model.position() << std::endl;
 		camera_model.manipulator_translate_front(-magnitude);
+		// player->model.translation += -magnitude * camera_model.front();
+		std::cout << "after : " << player->model.translation << " and " << camera_model.position () << std::endl;
+	}
 	if (inputs->keyboard.is_pressed(GLFW_KEY_S))
+	{
 		camera_model.manipulator_translate_front(magnitude);
+		// player->model.translation += magnitude * camera_model.front();
+	}
 	//   twist
-	if (inputs->keyboard.is_pressed(GLFW_KEY_A))
+	if (inputs->keyboard.is_pressed(GLFW_KEY_A)) {
 		camera_model.manipulator_rotate_roll_pitch_yaw(0, 0, -angle_magnitude);
-	if (inputs->keyboard.is_pressed(GLFW_KEY_D))
+		// player->model.rotation *= rotation_transform::from_axis_angle({ 0, 0, 1 }, -angle_magnitude);
+		// std::cout << "left camera : " << 180 * angle_magnitude / Pi <<  std::endl;
+	}
+	if (inputs->keyboard.is_pressed(GLFW_KEY_D)) {
 		camera_model.manipulator_rotate_roll_pitch_yaw(0, 0, angle_magnitude);
+		// player->model.rotation *= rotation_transform::from_axis_angle({ 0, 0, 1 }, angle_magnitude);
+		// std::cout << "right camera : " << 180 * angle_magnitude / Pi << std::endl;
+	}
 
+	// player; 
 
 	// With arrows
 	if (inputs->keyboard.ctrl == false) {
@@ -102,5 +114,10 @@ void maze_camera_controller::idle_frame(mat4& camera_matrix_view)
 	}*/
 
 
+
 	camera_matrix_view = camera_model.matrix_view();
+}
+
+void maze_camera_controller::set_player( mesh_drawable &_player) {
+	player = &_player;
 }

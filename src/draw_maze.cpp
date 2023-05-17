@@ -54,3 +54,12 @@ mesh create_maze(std::vector<std::vector<cgp::vec2>> points, float heigh, float 
 
 	return maze;
 }
+
+
+mesh maze(int** maze, int r, int c, float h, float e, float D) {
+	for (int i = 0; i < r; i++) {
+		for (int j = 0; j < c; j++) {
+
+		}
+	}
+}

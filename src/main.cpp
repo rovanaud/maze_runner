@@ -1,5 +1,3 @@
-
-
 #include "cgp/cgp.hpp" // Give access to the complete CGP library
 #include "environment.hpp" // The general scene environment + project variable
 #include <iostream> 
@@ -8,9 +6,6 @@
 
 // Custom scene of this code
 #include "scene.hpp"
-
-
-
 
 // *************************** //
 // Custom Scene defined in "scene.hpp"
@@ -134,6 +129,7 @@ void initialize_default_shaders()
 {
 	// Generate the default directory from which the shaders are found
 	//  By default, it should be "shaders/"
+	std::cout << "project::path -> " << project::path << std::endl;
 	std::string default_path_shaders = project::path +"shaders/";
 
 	// Set standard mesh shader for mesh_drawable
