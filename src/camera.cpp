@@ -1,5 +1,6 @@
 
 #include "camera.hpp"
+#include "generateMaze.hpp"
 
 using namespace cgp;
 
@@ -91,15 +92,43 @@ void maze_camera_controller::idle_frame(mat4& camera_matrix_view)
 	// player; 
 
 	// With arrows
-	if (inputs->keyboard.ctrl == false) {
+	if (inputs->keyboard.ctrl == false) { //update position player 
 		if (inputs->keyboard.up)
-			camera_model.manipulator_translate_front(-magnitude);
+			if (check_wall(player1.x - magnitude * cos(angle),
+				player1.y - magnitude * sin(angle)))
+			{
+				camera_model.manipulator_translate_front(-magnitude);
+				player1.x += -magnitude * cos(angle);
+				player1.y += -magnitude * sin(angle);
+			}
 		if (inputs->keyboard.down)
-			camera_model.manipulator_translate_front(magnitude);
+			if (check_wall(player1.x + magnitude * cos(angle),
+				player1.y + magnitude * sin(angle)))
+			{
+				camera_model.manipulator_translate_front(-magnitude);
+				player1.x += magnitude * cos(angle);
+				player1.y += magnitude * sin(angle);
+			}
 		if (inputs->keyboard.left)
 			camera_model.manipulator_rotate_roll_pitch_yaw(0, 0, -angle_magnitude);
+			if (angle >= 360)
+			{
+				angle = 360 - angle; 
+
+			}
+			else {
+				angle += -angle_magnitude;
+			}
 		if (inputs->keyboard.right)
 			camera_model.manipulator_rotate_roll_pitch_yaw(0, 0, angle_magnitude);
+			if (angle >= 360)
+			{
+				angle = 360 - angle;
+
+			}
+			else {
+				angle += -angle_magnitude;
+			}
 		
 	}
 	/*else {

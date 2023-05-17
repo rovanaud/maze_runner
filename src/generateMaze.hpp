@@ -25,8 +25,12 @@ struct Cell {
 };
 
 struct Player {
-    Cell pos;
+    int x; 
+    int y; 
 };
+
+vector<vector<int>> walls;
+Player player1; 
 
 void initMaze(Cell maze[][WIDTH]);
 bool allvisited(Cell maze[][WIDTH]);
@@ -35,3 +39,4 @@ void removeWall(Cell maze[][WIDTH], int row, int col, Direction dir);
 void generateMaze(Cell maze[][WIDTH]);
 void printMaze(Cell maze[][WIDTH]);
 vector<vector<vector<int>>> maze_into_connected_points(Cell[][WIDTH]);
+bool check_wall(int x, int y); 

@@ -33,7 +33,7 @@ bool allvisited(Cell maze[][WIDTH]) {
 }
 
 bool inBounds(int row, int col) {
-    return row >= 0 && row < HEIGHT && col >= 0 && col < WIDTH;
+    return row >= 0 && row < HEIGHT&& col >= 0 && col < WIDTH;
 }
 
 void removeWall(Cell maze[][WIDTH], int row, int col, Direction dir) {
@@ -110,14 +110,14 @@ void printMaze(Cell maze[][WIDTH]) {
 
 vector<vector<vector<int>>> maze_into_connected_points(Cell maze[][WIDTH]) {
     /*Cell maze[HEIGHT][WIDTH];
-	initMaze(maze);
-	generateMaze(maze);*/
-	vector<vector<vector<int>>> connected_points;
+    initMaze(maze);
+    generateMaze(maze);*/
+    vector<vector<vector<int>>> connected_points;
     connected_points.push_back(vector<vector<int>> { {0, 0}, { 0, HEIGHT - 1 } });
     connected_points.push_back(vector<vector<int>> { {0, 0}, { WIDTH - 1, 0 } });
     connected_points.push_back(vector<vector<int>> { { 0, HEIGHT - 1}, { HEIGHT - 1, WIDTH - 1 } });
     connected_points.push_back(vector<vector<int>> { { WIDTH - 1, HEIGHT - 1 }, { WIDTH - 1, 0 }});
-    
+
     for (int i = 0; i < HEIGHT - 1; i++) {
         int p1(0), p2(0);
         int j = 0;
@@ -128,12 +128,15 @@ vector<vector<vector<int>>> maze_into_connected_points(Cell maze[][WIDTH]) {
             else {
                 if (p1 != p2) {
                     connected_points.push_back(vector<vector<int>> { { i, p1}, { i , p2 } });
+                    walls.push_back({ i, p1 });//position des murs; 
+                    walls.push_back({ i, p2 });
+
                 }
                 p1 = p2 = j + 1;
-            }  
+            }
             ++j;
         }
-	}
+    }
     for (int i = 0; i < WIDTH - 1; i++) {
         int p1(0), p2(0);
         int j = 0;
@@ -143,12 +146,27 @@ vector<vector<vector<int>>> maze_into_connected_points(Cell maze[][WIDTH]) {
             }
             else {
                 if (p1 != p2) {
-                    connected_points.push_back(vector<vector<int>> { { p1, i }, { p2, i  } });
+                    connected_points.push_back(vector<vector<int>> { { p1, i }, { p2, i } });
+                    walls.push_back({ p1, i });
+                    walls.push_back({ p2, i });
                 }
                 p1 = p2 = j + 1;
-            }     
+            }
             ++j;
         }
-	}
-	return connected_points;
+    }
+    return connected_points;
 }
+
+bool check_wall(int x, int y)
+{
+    for (size_t i = 0; i < walls.size(); i++)
+    {
+        if (x == walls[i][0] && y == walls[i][1])
+        {
+            return true; 
+        }
+
+    }
+    return false; 
+};

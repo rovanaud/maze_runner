@@ -30,6 +30,9 @@ void scene_structure::initialize()
 	generateMaze(maze_test);
 	printMaze(maze_test);
 
+	player1.x = 0; //coordonnées initiales du joueur
+	player1.y = 0; 
+
 	auto x = maze_into_connected_points(maze_test);
 
 	//for (auto e : x) {

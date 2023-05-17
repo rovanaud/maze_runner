@@ -4,6 +4,8 @@ using namespace cgp;
 using namespace std;
 
 
+float angle; 
+
 struct maze_camera_controller : camera_controller_first_person
 {
 	camera_first_person camera_model;
