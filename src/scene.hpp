@@ -51,7 +51,7 @@ struct scene_structure : cgp::scene_inputs_generic {
 	// Functions
 	// ****************************** //
 
-	bool first_person = true;
+	bool first_person = false;
 
 	void initialize();    // Standard initialization to be called before the animation loop
 	void display_frame(); // The frame display to be called within the animation loop

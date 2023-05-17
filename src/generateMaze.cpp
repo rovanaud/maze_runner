@@ -1,10 +1,10 @@
 #include "generateMaze.hpp"
 
 //
-// mur sup: wall[1]
-// mur inf: wall[0]
-// mur gauche: wall[3]
-// mur droite: wall[2]
+// mur inf: wall[1]
+// mur sup: wall[0]
+// mur droite: wall[3]
+// mur gauche: wall[2]
 //
 
 using namespace std;
@@ -57,7 +57,7 @@ void removeWall(Cell maze[][WIDTH], int row, int col, Direction dir) {
     }
 }
 
-void generateMaze(Cell maze[][WIDTH]) {
+vector <int> generateMaze(Cell maze[][WIDTH]) {
     stack<pair<int, int>> cells;
     int startRow = rand() % HEIGHT;
     int startCol = rand() % WIDTH;
@@ -80,6 +80,9 @@ void generateMaze(Cell maze[][WIDTH]) {
             }
         }
     }
+
+    vector<int> start = { startRow, startCol };
+    return start; 
 }
 
 void printMaze(Cell maze[][WIDTH]) {
@@ -108,65 +111,83 @@ void printMaze(Cell maze[][WIDTH]) {
     }
 }
 
-vector<vector<vector<int>>> maze_into_connected_points(Cell maze[][WIDTH]) {
+//vector<vector<vector<int>>> maze_into_connected_points(Cell maze[][WIDTH], vector<vector<int>>& walls) {
+//    /*Cell maze[HEIGHT][WIDTH];
+//    initMaze(maze);
+//    generateMaze(maze);*/
+//    vector<vector<vector<int>>> connected_points;
+//
+//    //make the frame of the maze
+//    connected_points.push_back(vector<vector<int>> { {0, 0}, { 0, HEIGHT - 1 } });
+//    connected_points.push_back(vector<vector<int>> { {0, 0}, { WIDTH - 1, 0 } });
+//    connected_points.push_back(vector<vector<int>> { { 0, HEIGHT - 1}, { HEIGHT - 1, WIDTH - 1 } });
+//    connected_points.push_back(vector<vector<int>> { { WIDTH - 1, HEIGHT - 1 }, { WIDTH - 1, 0 }});
+//
+//    for (int i = 0; i < HEIGHT - 1; i++) {
+//        int p1(0), p2(0);
+//        int j = 0;
+//        while (j < WIDTH) {
+//            if (maze[i][j].walls[0]) {
+//                p2 = j + 1;
+//            }
+//            else {
+//                if (p1 != p2) {
+//                    connected_points.push_back(vector<vector<int>> { { i, p1}, { i , p2 } });
+//                    walls.push_back({ i, p1 });//position des murs; 
+//                    walls.push_back({ i, p2 });
+//
+//                }
+//                p1 = p2 = j + 1;
+//            }
+//            ++j;
+//        }
+//    }
+//    for (int i = 0; i < WIDTH - 1; i++) {
+//        int p1(0), p2(0);
+//        int j = 0;
+//        while (j < HEIGHT) {
+//            if (maze[i][j].walls[2]) {
+//                p2 = j + 1;
+//            }
+//            else {
+//                if (p1 != p2) {
+//                    connected_points.push_back(vector<vector<int>> { { p1, i }, { p2, i } });
+//                }
+//                p1 = p2 = j + 1;
+//            }
+//            ++j;
+//        }
+//    }
+//    return connected_points;
+//}
+
+vector<vector<vector<int>>> maze_into_connected_points(Cell maze[][WIDTH], vector<vector<int>>& walls) {
     /*Cell maze[HEIGHT][WIDTH];
     initMaze(maze);
     generateMaze(maze);*/
     vector<vector<vector<int>>> connected_points;
-    connected_points.push_back(vector<vector<int>> { {0, 0}, { 0, HEIGHT - 1 } });
-    connected_points.push_back(vector<vector<int>> { {0, 0}, { WIDTH - 1, 0 } });
-    connected_points.push_back(vector<vector<int>> { { 0, HEIGHT - 1}, { HEIGHT - 1, WIDTH - 1 } });
-    connected_points.push_back(vector<vector<int>> { { WIDTH - 1, HEIGHT - 1 }, { WIDTH - 1, 0 }});
 
-    for (int i = 0; i < HEIGHT - 1; i++) {
-        int p1(0), p2(0);
-        int j = 0;
-        while (j < WIDTH) {
-            if (maze[i][j].walls[0]) {
-                p2 = j + 1;
-            }
-            else {
-                if (p1 != p2) {
-                    connected_points.push_back(vector<vector<int>> { { i, p1}, { i , p2 } });
-                    walls.push_back({ i, p1 });//position des murs; 
-                    walls.push_back({ i, p2 });
+    //make the frame of the maze
+    /*connected_points.push_back(vector<vector<int>> { {0, 0}, { 0, HEIGHT } });
+    connected_points.push_back(vector<vector<int>> { {0, 0}, { WIDTH , 0 } });
+    connected_points.push_back(vector<vector<int>> { { 0, HEIGHT }, { HEIGHT, WIDTH} });
+    connected_points.push_back(vector<vector<int>> { { WIDTH , HEIGHT }, { WIDTH, 0 }});*/
 
-                }
-                p1 = p2 = j + 1;
+    for (int i = 0; i<HEIGHT; i++) { //i = y (hauteur) et j = x (longueur)
+        for (int j = 0; j<WIDTH; j++)
+        {
+            if (maze[i][j].walls[1])
+            {
+                connected_points.push_back(vector<vector<int>> { {j, -(i+1)}, { j+ 1, -(i+1)}}); // y en premier et x en deuxième
+                std::cout << "bottom " << j << ',' << i << endl;
             }
-            ++j;
-        }
-    }
-    for (int i = 0; i < WIDTH - 1; i++) {
-        int p1(0), p2(0);
-        int j = 0;
-        while (j < HEIGHT) {
-            if (maze[i][j].walls[2]) {
-                p2 = j + 1;
+            if (maze[i][j].walls[3])
+            {
+                connected_points.push_back(vector<vector<int>> { {j+1, -i }, { j + 1, -(i+1)}});
+                std::cout << "right " << j << ',' << i << endl;
             }
-            else {
-                if (p1 != p2) {
-                    connected_points.push_back(vector<vector<int>> { { p1, i }, { p2, i } });
-                    walls.push_back({ p1, i });
-                    walls.push_back({ p2, i });
-                }
-                p1 = p2 = j + 1;
-            }
-            ++j;
         }
     }
     return connected_points;
 }
 
-bool check_wall(int x, int y)
-{
-    for (size_t i = 0; i < walls.size(); i++)
-    {
-        if (x == walls[i][0] && y == walls[i][1])
-        {
-            return true; 
-        }
-
-    }
-    return false; 
-};

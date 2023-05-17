@@ -1,4 +1,6 @@
-/*******************/
+#pragma once
+
+///*******************/
 // MAZE 
 //******************// 
 
@@ -11,32 +13,20 @@
 
 using namespace std;
 
-const int WIDTH = 15;
-const int HEIGHT = 15;
+constexpr int WIDTH = 15;
+constexpr int HEIGHT = 15;
 
 enum Direction { UP, DOWN, LEFT, RIGHT };
-
-//struct Cell;
-//struct Player;
 
 struct Cell {
     bool visited;
     bool walls[4];
 };
 
-struct Player {
-    int x; 
-    int y; 
-};
-
-vector<vector<int>> walls;
-Player player1; 
-
 void initMaze(Cell maze[][WIDTH]);
 bool allvisited(Cell maze[][WIDTH]);
 bool inBounds(int row, int col);
 void removeWall(Cell maze[][WIDTH], int row, int col, Direction dir);
-void generateMaze(Cell maze[][WIDTH]);
+vector<int> generateMaze(Cell maze[][WIDTH]);
 void printMaze(Cell maze[][WIDTH]);
-vector<vector<vector<int>>> maze_into_connected_points(Cell[][WIDTH]);
-bool check_wall(int x, int y); 
+vector<vector<vector<int>>> maze_into_connected_points(Cell[][WIDTH], vector<vector<int>>& walls);
