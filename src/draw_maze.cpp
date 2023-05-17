@@ -2,13 +2,13 @@
 
 using namespace cgp;
 
-mesh draw_wall(vec2 p1, vec2 p2, float h, float e) {
+mesh draw_wall(std::vector<int> p1, std::vector<int> p2, float h, float e) {
 	mesh wall;
 
 	// normal vector
-	vec3 n = normalize(vec3({ p2.y - p1.y, p1.x - p2.x, 0 }));
-	vec3 p = { p1.x, p1.y, 0 };
-	vec3 q = { p2.x, p2.y, 0 };
+	vec3 n = normalize(vec3({ p2[1] - p1[1], p1[0] - p2[0], 0}));
+	vec3 p = { p1[0], p1[1], 0 };
+	vec3 q = { p2[0], p2[1], 0};
 	vec3 z = { 0, 0, 1 };
 	// Points of the basis
 	vec3 s1 = p + e * n;
@@ -35,20 +35,21 @@ mesh draw_wall(vec2 p1, vec2 p2, float h, float e) {
 	return wall;	
 }
 
-mesh create_maze(std::vector<std::vector<cgp::vec2>> points, float heigh, float e) {
+mesh create_maze(std::vector<std::vector<std::vector<int>>> points, float heigh, float e) {
 	mesh maze;
 	float max_x = -std::round_toward_neg_infinity;
-	float max_y = -std::round_toward_neg_infinity;
+	float max_y = std::round_toward_neg_infinity;
 	for (auto pair : points) {
 		maze.push_back(draw_wall(pair[0], pair[1], heigh, e));
-		max_x = std::max(max_x, std::max(pair[0].x, pair[1].x));
-		max_y = std::max(max_y, std::max(pair[0].y, pair[1].y));
+		max_x = std::max(max_x, (float)std::max(pair[0][0], pair[1][0]));
+		max_y = std::min(max_y, (float)std::min(pair[0][1], pair[1][1]));
 	}
 	
 	//std::cout << "Maze created" << std::endl;
 	maze.apply_translation_to_position( vec3({ -max_x / 2, -max_y / 2, 0 }) );
+	std::cout << 1 << std ::endl; 
 	mesh ground = mesh_primitive_quadrangle(vec3(-max_x / 2, -max_y / 2, 0), vec3(max_x / 2, -max_y / 2, 0), vec3(max_x / 2, max_y / 2, 0), vec3(-max_x / 2, max_y / 2, 0));
-	// ground.set_color(vec3(0.9f, 0.5f, 0.01f));
+	std::cout << 2 << std :: endl;
 	ground.color.fill({ 0.9f, 0.5f, 0.01f });
 	maze.push_back(ground);
 

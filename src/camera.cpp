@@ -105,7 +105,7 @@ void maze_camera_controller::idle_frame(mat4& camera_matrix_view)
 			if (check_wall(player1.x + magnitude * cos(angle),
 				player1.y + magnitude * sin(angle)))
 			{
-				camera_model.manipulator_translate_front(-magnitude);
+				camera_model.manipulator_translate_front(magnitude);
 				player1.x += magnitude * cos(angle);
 				player1.y += magnitude * sin(angle);
 			}
@@ -147,6 +147,10 @@ void maze_camera_controller::idle_frame(mat4& camera_matrix_view)
 	camera_matrix_view = camera_model.matrix_view();
 }
 
-void maze_camera_controller::set_player( mesh_drawable &_player) {
-	player = &_player;
-}
+
+bool maze_camera_controller::check_wall(int x, int y)
+{
+    int col = x/WIDTH; 
+    int row = y/HEIGHT;
+    return true; 
+};

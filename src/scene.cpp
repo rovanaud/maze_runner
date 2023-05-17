@@ -27,13 +27,14 @@ void scene_structure::initialize()
 	// test de la fonction maze_into_connected_points
 	Cell maze_test[HEIGHT][WIDTH];
 	initMaze(maze_test);
-	generateMaze(maze_test);
+	vector <int> start = generateMaze(maze_test);
+	std::cout << start[0] << ',' << start[1] << endl; 
 	printMaze(maze_test);
 
-	player1.x = 0; //coordonnées initiales du joueur
-	player1.y = 0; 
+	//camera_controller_first_person.player1.x = 0; //coordonnées initiales du joueur
+	//camera_controller_first_person.player1.y = 0;
 
-	auto x = maze_into_connected_points(maze_test);
+	/*auto x = maze_into_connected_points(maze_test, camera_controller_first_person.walls);*/ // getter walls (retour référence)
 
 	//for (auto e : x) {
 	//	for (auto f : e) {
@@ -53,20 +54,20 @@ void scene_structure::initialize()
 	test_set[3].push_back(vec2(0.91f, 0.0f));
 	test_set[3].push_back(vec2(0.0f, 0.0f));
 
-	vector<vector<vec2>> y; // vecteur de vecteur de vecteur de doubles
+	/*vector<vector<vec2>> y;*/ // vecteur de vecteur de vecteur de doubles
 
 	// Parcourir chaque élément du vecteur d'entiers et les convertir en double
-	for (int i = 0; i < x.size(); i++) {
+	/*for (int i = 0; i < x.size(); i++) {
 		vector<vec2> inner_vect_double;
 		for (int j = 0; j < x[i].size(); j++) {
 			vec2 inner_inner_vect_double(x[i][j][0], x[i][j][1]);
 			inner_vect_double.push_back(inner_inner_vect_double);
 		}
 		y.push_back(inner_vect_double);
-	}
+	}*/
 
 
-	mesh maze_mesh = create_maze(y, .4f, 0.01f); //draw_wall(p1, p2, h, e); 
+	mesh maze_mesh = create_maze(maze_into_connected_points(maze_test, camera_controller_first_person.walls), .4f, 0.01f); //draw_wall(p1, p2, h, e); 
 	
 	maze.initialize_data_on_gpu(maze_mesh);
 	maze.material.color = vec3({ 0.2f, 0.9f, 0.7f });
@@ -123,20 +124,20 @@ void scene_structure::initialize()
 		// cout << "computed front : " << -(camera_controller_first_person.camera_model.matrix_frame() * vec4(0, 0, 1, 0)) << endl;
 		// faire -(camera_controller_first_person.camera_model.matrix_frame() * vec4( 0, 0, 1, 0)).xyz() pour avoir un vec3 à la place d'un vec4
 
-	}
-	else {
-		camera_control.initialize(inputs, window);
-		camera_control.set_rotation_axis_z();
-		camera_control.look_at(vec3(0, 0, 10), vec3(0, 0, 0), vec3(0, 0, 1));
-	}
-	
+	player.initialize_data_on_gpu(mesh_primitive_sphere(r));
+	player.model.translation = { start[0]-WIDTH/2, -start[1]+HEIGHT/2, 0}; //???? Comment faire pour que la boule jaune se positionne au bon endroit ? 
+	player.material.color = vec3({ 0.9f, 0.8f, 0.1f });
+
+	/*hierarchy.add(maze, "maze");
+	hierarchy.add(player, "player", "maze", { r, r, h/2 - r});
+	*/
 }
 
 void scene_structure::display_frame()
 {
 	// Set the light to the current position of the camera
 	if (first_person) 
-		environment.light = camera_controller_first_person.camera_model.position();
+		environment.light = camera_controller_first_person.camera_model.position(); //comment faire pour positionner la caméra à l'endroit souhaité ? 
 	else
 		environment.light = camera_control.camera_model.position();
 

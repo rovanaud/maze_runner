@@ -51,7 +51,7 @@ struct scene_structure : cgp::scene_inputs_generic {
 	// Functions
 	// ****************************** //
 
-	bool first_person = true;
+	bool first_person = false;
 
 	timer_basic timer;
 

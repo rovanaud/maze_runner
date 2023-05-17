@@ -1,10 +1,13 @@
 #include "cgp/cgp.hpp"
+#include "generateMaze.hpp"
 
 using namespace cgp;
 using namespace std;
 
-
-float angle; 
+struct Player {
+	int x; 
+	int y; 
+};
 
 struct maze_camera_controller : camera_controller_first_person
 {
@@ -30,6 +33,12 @@ struct maze_camera_controller : camera_controller_first_person
 
 private:
 	bool is_cursor_trapped = false; // true = cursor captured (/infinite motion), false = cursor free
+	float angle;
+	bool check_wall(int x, int y);
+
+public: 
+	vector<vector<int>> walls;
+	Player player1;
 };
 
 
