@@ -29,10 +29,10 @@ struct maze_camera_controller : camera_controller_first_person
 private:
 	bool is_cursor_trapped = false; // true = cursor captured (/infinite motion), false = cursor free
 	float angle;
-	bool check_wall(int x, int y);
+	bool check_wall(float x, float y);
 
 public: 
-	vector<vector<int>> walls;
+	std:: vector<vector<Cell>> maze;
 	Player player1;
 };
 

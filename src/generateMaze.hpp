@@ -23,10 +23,7 @@ struct Cell {
     bool walls[4];
 };
 
-void initMaze(Cell maze[][WIDTH]);
-bool allvisited(Cell maze[][WIDTH]);
-bool inBounds(int row, int col);
-void removeWall(Cell maze[][WIDTH], int row, int col, Direction dir);
-vector<int> generateMaze(Cell maze[][WIDTH]);
-void printMaze(Cell maze[][WIDTH]);
-vector<vector<vector<int>>> maze_into_connected_points(Cell[][WIDTH], vector<vector<int>>& walls);
+void initMaze(vector<vector<Cell>>& maze); //pas moyen de faire un pointeur ? 
+vector<int> generateMaze(vector<vector<Cell>>& maze);
+void printMaze(std::vector<vector<Cell>>& maze);
+vector<vector<vector<int>>> maze_into_connected_points(std::vector<vector<Cell>>& maze);

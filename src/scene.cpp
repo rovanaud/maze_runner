@@ -31,27 +31,14 @@ void scene_structure::initialize()
 	}
 	
 	// test de la fonction maze_into_connected_points
-	Cell maze_test[HEIGHT][WIDTH];
+
+	vector<vector<Cell>>& maze_test = camera_controller_first_person.maze;
 	initMaze(maze_test);
-	vector <int> start = generateMaze(maze_test);
-	std::cout << start[0] << ',' << start[1] << endl; 
+	vector <int> start = generateMaze(maze_test); 
 	printMaze(maze_test);
 
-	//camera_controller_first_person.player1.x = 0; //coordonnées initiales du joueur
-	//camera_controller_first_person.player1.y = 0;
-
-	/*auto x = maze_into_connected_points(maze_test, camera_controller_first_person.walls);*/ // getter walls (retour référence)
-
-	//for (auto e : x) {
-	//	for (auto f : e) {
-	//		for (auto g : f)
-	//			std::cout << g << " ";
-	//		std::cout << "\n";
-	//	}
-	//	std::cout << "-----------------------------" << std::endl;
-	//}
-
-	
+	camera_controller_first_person.player1.x = 7; //coordonnées initiales du joueur
+	camera_controller_first_person.player1.y = 7;
 
 	test_set[0].push_back(vec2(0.0f, 0.0f));
 	test_set[0].push_back(vec2(0.0f, 0.91f));
@@ -75,13 +62,13 @@ void scene_structure::initialize()
 	}*/
 
 
-	mesh maze_mesh = create_maze(maze_into_connected_points(maze_test, camera_controller_first_person.walls), .4f, 0.01f); //draw_wall(p1, p2, h, e); 
+	mesh maze_mesh = create_maze(maze_into_connected_points(camera_controller_first_person.maze), .4f, 0.01f); //draw_wall(p1, p2, h, e); 
 	
 	maze.initialize_data_on_gpu(maze_mesh);
 	maze.material.color = vec3({ 0.2f, 0.9f, 0.7f });
 
 	player.initialize_data_on_gpu(mesh_primitive_sphere(r));
-	player.model.translation = { start[0]-WIDTH/2, -start[1]+HEIGHT/2, 0}; //???? Comment faire pour que la boule jaune se positionne au bon endroit ? 
+	player.model.translation = { camera_controller_first_person.player1.x - WIDTH/2, camera_controller_first_person.player1.y - HEIGHT/2, 0};
 	player.material.color = vec3({ 0.9f, 0.8f, 0.1f });
 
 	/*hierarchy.add(maze, "maze");
