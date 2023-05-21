@@ -10,7 +10,8 @@
 using namespace std;
 
 
-void initMaze(Cell maze[][WIDTH]) {
+void initMaze(vector<vector<Cell>>& maze) {
+    maze.resize(WIDTH, vector<Cell>(HEIGHT));
     for (int i = 0; i < HEIGHT; i++) {
         for (int j = 0; j < WIDTH; j++) {
             maze[i][j].visited = false;
@@ -21,71 +22,79 @@ void initMaze(Cell maze[][WIDTH]) {
     }
 }
 
-bool allvisited(Cell maze[][WIDTH]) {
-    for (int i = 0; i < HEIGHT; i++) {
-        for (int j = 0; j < WIDTH; j++) {
-            if (!maze[i][j].visited) {
-                return false;
+vector <int> generateMaze(vector<vector<Cell>>& maze) {
+
+    maze[0][0].walls[2] = false; 
+    maze[0][14].walls[3] = false;
+
+    std::stack<std::pair<int, int>> stack;
+    int totalCells = WIDTH * HEIGHT;
+    int visitedCells = 1;
+    std::pair<int, int> currentCell = std::make_pair(0, 0);
+    maze[currentCell.first][currentCell.second].visited = true;
+
+    while (visitedCells < totalCells) {
+        std::vector<std::pair<int, int>> neighbors;
+
+        // Check neighboring cells
+        if (currentCell.first > 0 && !maze[currentCell.first - 1][currentCell.second].visited) {
+            neighbors.push_back(std::make_pair(currentCell.first - 1, currentCell.second));
+        }
+        if (currentCell.first < WIDTH - 1 && !maze[currentCell.first + 1][currentCell.second].visited) {
+            neighbors.push_back(std::make_pair(currentCell.first + 1, currentCell.second));
+        }
+        if (currentCell.second > 0 && !maze[currentCell.first][currentCell.second - 1].visited) {
+            neighbors.push_back(std::make_pair(currentCell.first, currentCell.second - 1));
+        }
+        if (currentCell.second < HEIGHT - 1 && !maze[currentCell.first][currentCell.second + 1].visited) {
+            neighbors.push_back(std::make_pair(currentCell.first, currentCell.second + 1));
+        }
+
+        if (!neighbors.empty()) {
+            // Choose a random neighbor
+            int randomIndex = rand() % neighbors.size();
+            std::pair<int, int> nextCell = neighbors[randomIndex];
+
+            // Remove the wall between current cell and next cell
+            if (nextCell.first == currentCell.first - 1 ) {
+                //std::cout << "up " << currentCell.first << ',' << currentCell.second << endl;
+                maze[currentCell.first][currentCell.second].walls[0] = false;
+                maze[nextCell.first][nextCell.second].walls[1] = false;
             }
+            else if (nextCell.first == currentCell.first + 1) {
+                //std::cout << "down " << currentCell.first << ',' << currentCell.second << endl;
+                maze[currentCell.first][currentCell.second].walls[1] = false;
+                maze[nextCell.first][nextCell.second].walls[0] = false;
+            }
+            else if (nextCell.second == currentCell.second - 1) {
+                //std::cout << "gauche " << currentCell.first << ',' << currentCell.second << endl;
+                maze[currentCell.first][currentCell.second].walls[2] = false;
+                maze[nextCell.first][nextCell.second].walls[3] = false;
+            }
+            else if (nextCell.second == currentCell.second + 1) {
+                //std::cout << "droite " << currentCell.first << ',' << currentCell.second << endl;
+                maze[currentCell.first][currentCell.second].walls[3] = false;
+                maze[nextCell.first][nextCell.second].walls[2] = false;
+            }
+
+            // Update the current cell
+            currentCell = nextCell;
+            maze[currentCell.first][currentCell.second].visited = true;
+            stack.push(currentCell);
+            visitedCells++;
+        }
+        else if (!stack.empty()) {
+            // Backtrack if there are no unvisited neighboring cells
+            currentCell = stack.top();
+            stack.pop();
         }
     }
-    return true;
+
+    vector<int> start = { 0, 0 };
+    return start;
 }
 
-bool inBounds(int row, int col) {
-    return row >= 0 && row < HEIGHT&& col >= 0 && col < WIDTH;
-}
-
-void removeWall(Cell maze[][WIDTH], int row, int col, Direction dir) {
-    switch (dir) {
-    case UP:
-        maze[row][col].walls[0] = false;
-        maze[row - 1][col].walls[1] = false;
-        break;
-    case DOWN:
-        maze[row][col].walls[1] = false;
-        maze[row + 1][col].walls[0] = false;
-        break;
-    case LEFT:
-        maze[row][col].walls[2] = false;
-        maze[row][col - 1].walls[3] = false;
-        break;
-    case RIGHT:
-        maze[row][col].walls[3] = false;
-        maze[row][col + 1].walls[2] = false;
-        break;
-    }
-}
-
-vector <int> generateMaze(Cell maze[][WIDTH]) {
-    stack<pair<int, int>> cells;
-    int startRow = rand() % HEIGHT;
-    int startCol = rand() % WIDTH;
-    cells.push(make_pair(startRow, startCol));
-    maze[startRow][startCol].visited = true;
-    while (!cells.empty() && !allvisited(maze)) {
-        pair<int, int> current = cells.top();
-        cells.pop();
-        int row = current.first;
-        int col = current.second;
-        int neighbors[4][2] = { {row - 1, col}, {row + 1, col}, {row, col - 1}, {row, col + 1} };
-        random_shuffle(&neighbors[0], &neighbors[4]);
-        for (int i = 0; i < 4; i++) {
-            int nrow = neighbors[i][0];
-            int ncol = neighbors[i][1];
-            if (inBounds(nrow, ncol) && !maze[nrow][ncol].visited) {
-                cells.push(make_pair(nrow, ncol));
-                removeWall(maze, row, col, static_cast<Direction>(i));
-                maze[nrow][ncol].visited = true;
-            }
-        }
-    }
-
-    vector<int> start = { startRow, startCol };
-    return start; 
-}
-
-void printMaze(Cell maze[][WIDTH]) {
+void printMaze(vector<vector<Cell>>& maze) {
     cout << " ";
     for (int i = 0; i < WIDTH * 2 - 1; i++) {
         cout << "_";
@@ -111,67 +120,15 @@ void printMaze(Cell maze[][WIDTH]) {
     }
 }
 
-//vector<vector<vector<int>>> maze_into_connected_points(Cell maze[][WIDTH], vector<vector<int>>& walls) {
-//    /*Cell maze[HEIGHT][WIDTH];
-//    initMaze(maze);
-//    generateMaze(maze);*/
-//    vector<vector<vector<int>>> connected_points;
-//
-//    //make the frame of the maze
-//    connected_points.push_back(vector<vector<int>> { {0, 0}, { 0, HEIGHT - 1 } });
-//    connected_points.push_back(vector<vector<int>> { {0, 0}, { WIDTH - 1, 0 } });
-//    connected_points.push_back(vector<vector<int>> { { 0, HEIGHT - 1}, { HEIGHT - 1, WIDTH - 1 } });
-//    connected_points.push_back(vector<vector<int>> { { WIDTH - 1, HEIGHT - 1 }, { WIDTH - 1, 0 }});
-//
-//    for (int i = 0; i < HEIGHT - 1; i++) {
-//        int p1(0), p2(0);
-//        int j = 0;
-//        while (j < WIDTH) {
-//            if (maze[i][j].walls[0]) {
-//                p2 = j + 1;
-//            }
-//            else {
-//                if (p1 != p2) {
-//                    connected_points.push_back(vector<vector<int>> { { i, p1}, { i , p2 } });
-//                    walls.push_back({ i, p1 });//position des murs; 
-//                    walls.push_back({ i, p2 });
-//
-//                }
-//                p1 = p2 = j + 1;
-//            }
-//            ++j;
-//        }
-//    }
-//    for (int i = 0; i < WIDTH - 1; i++) {
-//        int p1(0), p2(0);
-//        int j = 0;
-//        while (j < HEIGHT) {
-//            if (maze[i][j].walls[2]) {
-//                p2 = j + 1;
-//            }
-//            else {
-//                if (p1 != p2) {
-//                    connected_points.push_back(vector<vector<int>> { { p1, i }, { p2, i } });
-//                }
-//                p1 = p2 = j + 1;
-//            }
-//            ++j;
-//        }
-//    }
-//    return connected_points;
-//}
 
-vector<vector<vector<int>>> maze_into_connected_points(Cell maze[][WIDTH], vector<vector<int>>& walls) {
+vector<vector<vector<int>>> maze_into_connected_points(vector<vector<Cell>>& maze) {
     /*Cell maze[HEIGHT][WIDTH];
     initMaze(maze);
     generateMaze(maze);*/
     vector<vector<vector<int>>> connected_points;
 
-    //make the frame of the maze
-    /*connected_points.push_back(vector<vector<int>> { {0, 0}, { 0, HEIGHT } });
-    connected_points.push_back(vector<vector<int>> { {0, 0}, { WIDTH , 0 } });
-    connected_points.push_back(vector<vector<int>> { { 0, HEIGHT }, { HEIGHT, WIDTH} });
-    connected_points.push_back(vector<vector<int>> { { WIDTH , HEIGHT }, { WIDTH, 0 }});*/
+    connected_points.push_back(vector<vector<int>> { {0, 0}, { 15, 0 }});
+    connected_points.push_back(vector<vector<int>> { {0, -1}, { 0, -15 }});
 
     for (int i = 0; i<HEIGHT; i++) { //i = y (hauteur) et j = x (longueur)
         for (int j = 0; j<WIDTH; j++)
@@ -179,12 +136,10 @@ vector<vector<vector<int>>> maze_into_connected_points(Cell maze[][WIDTH], vecto
             if (maze[i][j].walls[1])
             {
                 connected_points.push_back(vector<vector<int>> { {j, -(i+1)}, { j+ 1, -(i+1)}}); // y en premier et x en deuxième
-                std::cout << "bottom " << j << ',' << i << endl;
             }
             if (maze[i][j].walls[3])
             {
                 connected_points.push_back(vector<vector<int>> { {j+1, -i }, { j + 1, -(i+1)}});
-                std::cout << "right " << j << ',' << i << endl;
             }
         }
     }

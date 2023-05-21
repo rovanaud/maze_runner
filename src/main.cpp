@@ -76,7 +76,7 @@ int main(int, char* argv[])
 	glfwDestroyWindow(scene.window.glfw_window);
 	glfwTerminate();
 
-	return 0;
+	return 1;
 }
 
 void animation_loop()

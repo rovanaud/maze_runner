@@ -4,133 +4,74 @@
 #include "tree.hpp"
 #include "draw_maze.hpp"
 
-
 using namespace cgp;
 using namespace std;
 
 
-void scene_structure::initialize()
-{
-	// glEnable(GL_BLEND);
-	// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+void scene_structure::initialize() {
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	global_frame.initialize_data_on_gpu(mesh_primitive_frame());
 	
-	std::vector<std::vector<cgp::vec2>> test_set(4);
-	vec2 p1 = vec2(1.0f, 0.0f);
-	vec2 p2 = vec2(0.0f, 0.1f);
 	float h = 1.0f;
 	float e = .3f;
-	float r = 0.2f;
-	
-	
-	// test de la fonction maze_into_connected_points
-	Cell maze_test[HEIGHT][WIDTH];
+	float r = 0.08f;
+	//Maze Setup
 	initMaze(maze_test);
-	vector <int> start = generateMaze(maze_test);
-	std::cout << start[0] << ',' << start[1] << endl; 
+	vector<int> start = generateMaze(maze_test); 
 	printMaze(maze_test);
+ 
+	mesh maze_mesh = create_maze(maze_into_connected_points(maze_test), .4f, 0.01f); //draw_wall(p1, p2, h, e); 
 
-	//camera_controller_first_person.player1.x = 0; //coordonnées initiales du joueur
-	//camera_controller_first_person.player1.y = 0;
-
-	/*auto x = maze_into_connected_points(maze_test, camera_controller_first_person.walls);*/ // getter walls (retour référence)
-
-	//for (auto e : x) {
-	//	for (auto f : e) {
-	//		for (auto g : f)
-	//			std::cout << g << " ";
-	//		std::cout << "\n";
-	//	}
-	//	std::cout << "-----------------------------" << std::endl;
-	//}
-
-	test_set[0].push_back(vec2(0.0f, 0.0f));
-	test_set[0].push_back(vec2(0.0f, 0.91f));
-	test_set[1].push_back(vec2(0.0f, 0.91f));
-	test_set[1].push_back(vec2(0.91f, 0.91f));
-	test_set[2].push_back(vec2(0.91f, 0.91f));
-	test_set[2].push_back(vec2(0.91f, 0.0f));
-	test_set[3].push_back(vec2(0.91f, 0.0f));
-	test_set[3].push_back(vec2(0.0f, 0.0f));
-
-	/*vector<vector<vec2>> y;*/ // vecteur de vecteur de vecteur de doubles
-
-	// Parcourir chaque élément du vecteur d'entiers et les convertir en double
-	/*for (int i = 0; i < x.size(); i++) {
-		vector<vec2> inner_vect_double;
-		for (int j = 0; j < x[i].size(); j++) {
-			vec2 inner_inner_vect_double(x[i][j][0], x[i][j][1]);
-			inner_vect_double.push_back(inner_inner_vect_double);
-		}
-		y.push_back(inner_vect_double);
-	}*/
-
-
-	mesh maze_mesh = create_maze(maze_into_connected_points(maze_test, camera_controller_first_person.walls), .4f, 0.01f); //draw_wall(p1, p2, h, e); 
-	
 	maze.initialize_data_on_gpu(maze_mesh);
 	maze.material.color = vec3({ 0.2f, 0.9f, 0.7f });
-	maze.model.translation += vec3(-1, -1, 0);
 	
-	vec3 player_G = vec3(-1.5f, -1.5f, r / 4);
-	vec3 xx = player_G + vec3(r, 0, 0);
-	vec3 yy = player_G + vec3(0, r, 0);
-	
-	vec3 up = player_G +  1.3f * vec3(r * sqrt(2), r * sqrt(2), 0);
-
-	mesh direction = mesh_primitive_triangle(yy, xx, up);
-	direction.color.fill({ 1.f, 0, 0});
-	
+	// Player Setup
+	vec3 player_G  = vec3(0, 0, 0);
 	mesh player_mesh = mesh_primitive_sphere(r, player_G);
 	player_mesh.color.fill({ 0.9f, 0.8f, 0.1f });
-	player_mesh.push_back(direction);
-	
 	player.initialize_data_on_gpu(player_mesh);
+	// player.material.color = vec3({ 0.9f, 0.f, 0.f });
 
 
-	// test for transparency
-	// player.material.alpha = 0.1f;
-	// player.material.color = { 1, 1, 1 };
-	// player.model.translation += vec3(-1, -1, r / 4);
-
-	camera_controller_first_person.camera_model.front();
-
-	cout << "material alpha " << player.material.alpha << endl;
-	
-	// hierarchy.add(maze, "maze");
-	// hierarchy.add(player, "player", "maze", { r, r, h/2 - r});
-
-	// Finally setup the camera
+	// Finally, setup the camera
 	first_person = true;
 	if (first_person) {
 		camera_controller_first_person.initialize(inputs, window);
+		// maze.material.alpha = 0.2f;
+		
+		// place player at the begining of the maze
+		vec3 zaxis(0, 0, 1);
+		//vec3 st(start[0], start[1], r/2); // Position of the player
+		vec3 st(2, 2.5, r/2); // Position of the player
+		player.model.translation = st;
+		vec3 center = st + vec3(r * sqrt(2), r * sqrt(2), 0); // Position of camera
+		double distance = 0.4f; // Distance between the player and the camera
+		cout << "le début du lab : (" <<  start[0] << ", " << start[1] <<")"<< endl;
+		
+		// Look at the player, from behind
+		camera_controller_first_person.camera_model.look_at(st, center, zaxis);
+
+		camera_controller_first_person.camera_model.position_camera = st - distance * camera_controller_first_person.camera_model.front();
+		player.model.rotation = rotation_transform(camera_controller_first_person.camera_model.orientation_camera);
 		camera_controller_first_person.set_player(player);
 
-		// look_at( yeux, cible, normale) => front = cible - yeux 
-		vec3 center = player_G + vec3(r * sqrt(2), r * sqrt(2), 0);
-		vec3 eye = up;
-		vec3 zaxis(0, 0, 1);
-		camera_controller_first_person.camera_model.look_at(eye, center, zaxis);
-		cout << "Comparison between camera model position and eye, center, up : " << endl;
-		cout << camera_controller_first_person.camera_model.position() << endl;
-		cout << eye << endl;
-		cout << center << endl;
-		player.initialize_data_on_gpu(mesh_primitive_arrow());
-		player.model.translation = center;
-		player.model.rotation = rotation_transform::rotation_transform(camera_controller_first_person.camera_model.orientation_camera);
-		// J'ai loupé la formule à faire yeux - cible ce qui explique le moins...
-		// cout << "excepted front : " << normalize(vec3(r * cos(Pi / 4), r * sin(Pi / 4), r / 2) - vec3(0, 0, r / 2)) << endl;
-		// cout << "computed front : " << -(camera_controller_first_person.camera_model.matrix_frame() * vec4(0, 0, 1, 0)) << endl;
-		// faire -(camera_controller_first_person.camera_model.matrix_frame() * vec4( 0, 0, 1, 0)).xyz() pour avoir un vec3 à la place d'un vec4
-
-	player.initialize_data_on_gpu(mesh_primitive_sphere(r));
-	player.model.translation = { start[0]-WIDTH/2, -start[1]+HEIGHT/2, 0}; //???? Comment faire pour que la boule jaune se positionne au bon endroit ? 
-	player.material.color = vec3({ 0.9f, 0.8f, 0.1f });
-
-	/*hierarchy.add(maze, "maze");
-	hierarchy.add(player, "player", "maze", { r, r, h/2 - r});
-	*/
+		
+	}
+	else {
+		player.model.translation = vec3(2, 2.5, r/2);
+		cout << "collision :  at " << player.model.translation << " : " << collision_detection() << '\n';
+		player.model.translation = vec3(0.5, 2.5, r/2);
+		cout << "collision :  " << player.model.translation << " : " << collision_detection() << '\n';
+		player.model.translation = vec3(2.5, 6.5, r/2);
+		cout << "collision :  " << player.model.translation << " : " << collision_detection() << '\n';
+		player.model.translation = vec3(-1, -2.5, r/2);
+		cout << "collision :  " << player.model.translation << " : " << collision_detection() << '\n';
+		camera_control.initialize(inputs, window);
+		camera_control.look_at(vec3(0, 0, 20), vec3(0, 0, 0), vec3(0, 0, 1));
+	}
+	
 }
 
 void scene_structure::display_frame()
@@ -236,20 +177,45 @@ void scene_structure::keyboard_event()
 	// if (inputs.keyboard.down) {
 	// 	player.model.translation += vec3( 0, -magnitude, 0 );
 	// 	// cout << "down : " << magnitude << endl;
-	// }
-				
-	
+	// }	
 }
 
 void scene_structure::idle_frame()
 {
-	if(first_person) 
+	// cout << "come back to here" << endl;
+	if (first_person){
 		camera_controller_first_person.idle_frame(environment.camera_view);
+		if (collision_detection()) {
+			camera_controller_first_person.no_collision = false;// cout << "collision" << endl;
+		}
+	}
 	else 
 	 	camera_control.idle_frame(environment.camera_view);
 		
 }
 
-/*
-* On peut déplacer le joueur en utilisant les touches directionnelles et ensuite et seulement ensuite on peut placer la camera 
-*/
+bool scene_structure::collision_detection() {
+	
+
+	double up = std::round(player.model.translation.y) + 0.5f * (HEIGHT % 2);
+	double left = std::round(player.model.translation.x) - 0.5f * (WIDTH % 2);
+	
+	int i = WIDTH / 2  + std::floor(player.model.translation.x - 0.5 * (WIDTH % 2));
+	int j = HEIGHT / 2 - std::ceil(player.model.translation.y - 0.5 * (HEIGHT % 2));
+
+	float d_min = 0.08f;
+	// up collision
+	if ((std::abs(player.model.translation.y - up) < d_min) && maze_test[i][j].walls[0])
+		return true;
+	// down collision
+	if ((std::abs(player.model.translation.y - up - 1) < d_min) && maze_test[i][j].walls[1])
+		return true;
+	// left collision
+	if ((std::abs(player.model.translation.x - left) < d_min) && maze_test[i][j].walls[2])
+		return true;
+	// right collision
+	if ((std::abs(player.model.translation.x - left - 1) < d_min) && maze_test[i][j].walls[3])
+		return true;
+	cout << "no collision" << endl;
+	return false;
+}

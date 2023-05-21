@@ -2,7 +2,10 @@
 #include "camera.hpp"
 #include "generateMaze.hpp"
 
+#include <cmath>
+
 using namespace cgp;
+
 
 void maze_camera_controller::action_mouse_move(mat4& camera_matrix_view)
 {
@@ -53,6 +56,8 @@ void maze_camera_controller::action_keyboard(mat4&)
 
 void maze_camera_controller::idle_frame(mat4& camera_matrix_view)
 {
+	//cout << "here we are " << endl;
+	
 	// Preconditions
 	assert_cgp_no_msg(inputs != nullptr);
 	assert_cgp_no_msg(window != nullptr);
@@ -65,49 +70,46 @@ void maze_camera_controller::idle_frame(mat4& camera_matrix_view)
 	// displacement with WSAD
 
 	//   front/back
-	if (inputs->keyboard.is_pressed(GLFW_KEY_W))
-	{
-		std::cout << "before : " << player->model.translation << " and " << camera_model.position() << std::endl;
+	if (no_collision && inputs->keyboard.is_pressed(GLFW_KEY_W)) {
 		camera_model.manipulator_translate_front(-magnitude);
-		// player->model.translation += -magnitude * camera_model.front();
-		std::cout << "after : " << player->model.translation << " and " << camera_model.position () << std::endl;
+		player->model.translation = distance * camera_model.front() + camera_model.position() - vec3(0, 0, 0.04f); //player a bit under the camera vertical positon
+		player->model.rotation = rotation_transform::rotation_transform(camera_model.orientation_camera);
 	}
-	if (inputs->keyboard.is_pressed(GLFW_KEY_S))
-	{
+	if (no_collision && inputs->keyboard.is_pressed(GLFW_KEY_S)) {
 		camera_model.manipulator_translate_front(magnitude);
-		// player->model.translation += magnitude * camera_model.front();
+		player->model.translation = distance * camera_model.front() + camera_model.position() - vec3(0, 0, 0.04f);
+		player->model.rotation = rotation_transform::rotation_transform(camera_model.orientation_camera);
 	}
 	//   twist
-	if (inputs->keyboard.is_pressed(GLFW_KEY_A)) {
+	if (no_collision && inputs->keyboard.is_pressed(GLFW_KEY_A)) {
 		camera_model.manipulator_rotate_roll_pitch_yaw(0, 0, -angle_magnitude);
-		// player->model.rotation *= rotation_transform::from_axis_angle({ 0, 0, 1 }, -angle_magnitude);
-		// std::cout << "left camera : " << 180 * angle_magnitude / Pi <<  std::endl;
+		player->model.translation = distance * camera_model.front() + camera_model.position() - vec3(0, 0, 0.04f);
+		player->model.rotation = rotation_transform::rotation_transform(camera_model.orientation_camera);
 	}
-	if (inputs->keyboard.is_pressed(GLFW_KEY_D)) {
+	if (no_collision && inputs->keyboard.is_pressed(GLFW_KEY_D)) {
 		camera_model.manipulator_rotate_roll_pitch_yaw(0, 0, angle_magnitude);
-		// player->model.rotation *= rotation_transform::from_axis_angle({ 0, 0, 1 }, angle_magnitude);
-		// std::cout << "right camera : " << 180 * angle_magnitude / Pi << std::endl;
+		player->model.translation = distance * camera_model.front() + camera_model.position() - vec3(0, 0, 0.04f);
+		player->model.rotation = rotation_transform::rotation_transform(camera_model.orientation_camera);
 	}
-
-	// player; 
+	
 
 	// With arrows
 	if (inputs->keyboard.ctrl == false) { //update position player 
 		if (inputs->keyboard.up)
-			if (check_wall(player1.x - magnitude * cos(angle),
-				player1.y - magnitude * sin(angle)))
+			if (check_wall(player->model.translation.x - magnitude * cos(angle),
+				player->model.translation.y - magnitude * sin(angle)))
 			{
 				camera_model.manipulator_translate_front(-magnitude);
-				player1.x += -magnitude * cos(angle);
-				player1.y += -magnitude * sin(angle);
+				player->model.translation.x += -magnitude * cos(angle);
+				player->model.translation.y += -magnitude * sin(angle);
 			}
 		if (inputs->keyboard.down)
-			if (check_wall(player1.x + magnitude * cos(angle),
-				player1.y + magnitude * sin(angle)))
+			if (check_wall(player->model.translation.x + magnitude * cos(angle),
+				player->model.translation.y + magnitude * sin(angle)))
 			{
 				camera_model.manipulator_translate_front(magnitude);
-				player1.x += magnitude * cos(angle);
-				player1.y += magnitude * sin(angle);
+				player->model.translation.x += magnitude * cos(angle);
+				player->model.translation.y += magnitude * sin(angle);
 			}
 		if (inputs->keyboard.left)
 			camera_model.manipulator_rotate_roll_pitch_yaw(0, 0, -angle_magnitude);
@@ -129,9 +131,8 @@ void maze_camera_controller::idle_frame(mat4& camera_matrix_view)
 			else {
 				angle += -angle_magnitude;
 			}
-		
 	}
-	/*else {
+	else {
 		if (inputs->keyboard.up)
 			camera_model.manipulator_translate_front(-magnitude);
 		if (inputs->keyboard.down)
@@ -140,17 +141,43 @@ void maze_camera_controller::idle_frame(mat4& camera_matrix_view)
 			camera_model.manipulator_rotate_roll_pitch_yaw(angle_magnitude, 0, 0);
 		if (inputs->keyboard.right)
 			camera_model.manipulator_rotate_roll_pitch_yaw(-angle_magnitude, 0, 0);
-	}*/
+	}
 
 
 
 	camera_matrix_view = camera_model.matrix_view();
 }
 
+void maze_camera_controller::set_player(mesh_drawable& _player) {
+	distance = norm(camera_model.position() - _player.model.translation);
+	std::cout << distance << std::endl;
+	player = &_player;
+}
 
-bool maze_camera_controller::check_wall(int x, int y)
+bool maze_camera_controller::check_wall(float x, float y)
 {
-    int col = x/WIDTH; 
-    int row = y/HEIGHT;
-    return true; 
+	int col = std::floor(x); // donne la pose de la col et rox dans le lab 
+	int row = std::floor(y);
+
+	//if (x+0.5 >= row+0.5 && maze[row][col].walls[0]) //up
+	//{
+	//	return true; 
+	//}
+	//else if (x - 0.5 <= row - 0.5 && maze[row][col].walls[1]) 
+	//{
+	//	return true; 
+
+	//}
+	//else if (y + 0.5 >= col + 0.5 && maze[row][col].walls[3])
+	//{
+	//	return true; 
+	//}
+	//else if (y + 0.5 >= col + 0.5 && maze[row][col].walls[3])
+	//{
+	//	return true; 
+	//}
+	//else {
+	//	return false; 
+	//}
+	return false;
 };
