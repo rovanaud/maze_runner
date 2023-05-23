@@ -142,7 +142,7 @@ bool maze_camera_controller::check_wall(float x, float y)
 	int col = std::floor(x); // donne la pose de la col et rox dans le lab 
 	int row = std::floor(y);
 
-	if (x+0.5 >= row+0.5 && maze[row][col].walls[0]) //up
+	if (x+0.5 >= row+0.5 && maze[row][col].walls[0]) 
 	{
 		return true; 
 	}
