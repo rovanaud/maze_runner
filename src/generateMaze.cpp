@@ -57,22 +57,22 @@ vector <int> generateMaze(vector<vector<Cell>>& maze) {
 
             // Remove the wall between current cell and next cell
             if (nextCell.first == currentCell.first - 1 ) {
-                std::cout << "up " << currentCell.first << ',' << currentCell.second << endl;
+                //std::cout << "up " << currentCell.first << ',' << currentCell.second << endl;
                 maze[currentCell.first][currentCell.second].walls[0] = false;
                 maze[nextCell.first][nextCell.second].walls[1] = false;
             }
             else if (nextCell.first == currentCell.first + 1) {
-                std::cout << "down " << currentCell.first << ',' << currentCell.second << endl;
+                //std::cout << "down " << currentCell.first << ',' << currentCell.second << endl;
                 maze[currentCell.first][currentCell.second].walls[1] = false;
                 maze[nextCell.first][nextCell.second].walls[0] = false;
             }
             else if (nextCell.second == currentCell.second - 1) {
-                std::cout << "gauche " << currentCell.first << ',' << currentCell.second << endl;
+                //std::cout << "gauche " << currentCell.first << ',' << currentCell.second << endl;
                 maze[currentCell.first][currentCell.second].walls[2] = false;
                 maze[nextCell.first][nextCell.second].walls[3] = false;
             }
             else if (nextCell.second == currentCell.second + 1) {
-                std::cout << "droite " << currentCell.first << ',' << currentCell.second << endl;
+                //std::cout << "droite " << currentCell.first << ',' << currentCell.second << endl;
                 maze[currentCell.first][currentCell.second].walls[3] = false;
                 maze[nextCell.first][nextCell.second].walls[2] = false;
             }

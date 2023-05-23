@@ -4,6 +4,7 @@
 #include "cgp/cgp.hpp"
 #include "environment.hpp"
 #include "camera.hpp"
+#include "generateMaze.hpp"
 
 // This definitions allow to use the structures: mesh, mesh_drawable, etc. without mentionning explicitly cgp::
 using cgp::mesh;
@@ -43,6 +44,7 @@ struct scene_structure : cgp::scene_inputs_generic {
 
 	//cgp::mesh_drawable maze;
 	cgp::mesh_drawable maze;
+	vector<vector<Cell>> maze_test;
 
 	cgp::mesh_drawable player;
 
@@ -53,6 +55,8 @@ struct scene_structure : cgp::scene_inputs_generic {
 
 	bool first_person = true;
 
+	timer_basic timer;
+
 	void initialize();    // Standard initialization to be called before the animation loop
 	void display_frame(); // The frame display to be called within the animation loop
 	void display_gui();   // The display of the GUI, also called within the animation loop
@@ -62,6 +66,8 @@ struct scene_structure : cgp::scene_inputs_generic {
 	void mouse_click_event();
 	void keyboard_event();
 	void idle_frame();
+
+	bool collision_detection();
 
 };
 
