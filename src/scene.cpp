@@ -25,6 +25,10 @@ void scene_structure::initialize() {
 	mesh maze_mesh = create_maze(maze_into_connected_points(maze_test), .4f, 0.01f); //draw_wall(p1, p2, h, e); 
 
 	maze.initialize_data_on_gpu(maze_mesh);
+	maze.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/texture_grass.jpg",
+		GL_MIRRORED_REPEAT,
+		GL_MIRRORED_REPEAT);
+
 	maze.material.color = vec3({ 0.2f, 0.9f, 0.7f });
 	
 	// Player Setup
@@ -71,11 +75,32 @@ void scene_structure::initialize() {
 		camera_control.initialize(inputs, window);
 		camera_control.look_at(vec3(0, 0, 20), vec3(0, 0, 0), vec3(0, 0, 1));
 	}
+
+	// Sphere used to display the position of a light
+	sphere_light.initialize_data_on_gpu(mesh_primitive_sphere(0.2f));
 	
 }
 
 void scene_structure::display_frame()
 {
+
+	// Set additional uniform parameters to the shader
+	environment.uniform_generic.uniform_float["ambiant"] = gui.ambiant;
+	environment.uniform_generic.uniform_vec3["light_color"] = gui.light_color;
+	environment.uniform_generic.uniform_vec3["light_position"] = gui.light_position;
+	environment.uniform_generic.uniform_float["diffuse"] = gui.diffuse;
+	environment.uniform_generic.uniform_float["specular"] = gui.specular;
+	environment.uniform_generic.uniform_float["specular_exp"] = gui.specular_exp;
+	environment.uniform_generic.uniform_vec3["couleur_brume"] = environment.background_color;
+
+	sphere_light.model.translation = gui.light_position;
+	sphere_light.material.color = gui.light_color * 0.8f;
+	sphere_light.material.phong.ambient = 1;
+	sphere_light.material.phong.diffuse = 0;
+	sphere_light.material.phong.specular = 0;
+	draw(sphere_light, environment);
+
+
 	// Set the light to the current position of the camera
 	if (first_person) 
 		environment.light = camera_controller_first_person.camera_model.position(); //comment faire pour positionner la caméra à l'endroit souhaité ? 
@@ -109,6 +134,14 @@ void scene_structure::display_gui()
 {
 	ImGui::Checkbox("Frame", &gui.display_frame);
 	ImGui::Checkbox("Wireframe", &gui.display_wireframe);
+
+	ImGui::ColorEdit3("Light color", &gui.light_color[0]);
+	ImGui::SliderFloat3("Light position", &gui.light_position[0], -3.0f, 3.0f);
+
+	ImGui::SliderFloat("Ambiant", &gui.ambiant, 0.0f, 1.0f);
+	ImGui::SliderFloat("Diffuse", &gui.diffuse, 0.0f, 1.0f);
+	ImGui::SliderFloat("Specular", &gui.specular, 0.0f, 1.0f);
+	ImGui::SliderFloat("Specular_exp", &gui.specular_exp, 0, 256);
 }
 
 void scene_structure::mouse_move_event()
