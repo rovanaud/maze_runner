@@ -1,6 +1,6 @@
 
 #include "camera.hpp"
-#include "generateMaze.hpp"
+
 
 #include <cmath>
 
@@ -63,74 +63,65 @@ void maze_camera_controller::idle_frame(mat4& camera_matrix_view)
 	assert_cgp_no_msg(window != nullptr);
 	if (!is_active) return;
 
-	float const magnitude = 2 * inputs->time_interval;
-	float const angle_magnitude = 2 * inputs->time_interval;
+	float const magnitude = inputs->time_interval;
+	float const angle_magnitude = inputs->time_interval;
 
 
 	// displacement with WSAD
 
 	//   front/back
-	if (no_collision && inputs->keyboard.is_pressed(GLFW_KEY_W)) {
-		camera_model.manipulator_translate_front(-magnitude);
-		player->model.translation = distance * camera_model.front() + camera_model.position() - vec3(0, 0, 0.04f); //player a bit under the camera vertical positon
-		player->model.rotation = rotation_transform::rotation_transform(camera_model.orientation_camera);
+	if (inputs->keyboard.is_pressed(GLFW_KEY_W)) {
+		//camera_model.manipulator_translate_front(-magnitude);
+		vec3 new_position = camera_model.position_camera + camera_model.front() * magnitude;
+		//if (possible_move(new_position.x, new_position.y)) cout << true << endl;
+		if (possible_move(new_position.x, new_position.y))
+			camera_model.position_camera = new_position;
 	}
-	if (no_collision && inputs->keyboard.is_pressed(GLFW_KEY_S)) {
-		camera_model.manipulator_translate_front(magnitude);
-		player->model.translation = distance * camera_model.front() + camera_model.position() - vec3(0, 0, 0.04f);
-		player->model.rotation = rotation_transform::rotation_transform(camera_model.orientation_camera);
+	if (inputs->keyboard.is_pressed(GLFW_KEY_S)) {
+		// camera_model.manipulator_translate_front(magnitude);
+		vec3 new_position = camera_model.position_camera - camera_model.front() * magnitude;
+		//if (possible_move(new_position.x, new_position.y)) cout << true << endl;
+		if (possible_move(new_position.x, new_position.y))
+			camera_model.position_camera = new_position;
+		//player->model.translation = distance * camera_model.front() + camera_model.position() - vec3(0, 0, 0.04f);
+		//player->model.rotation = rotation_transform::rotation_transform(camera_model.orientation_camera);
 	}
-	//   twist
+	//   twist // no need to check for collision
 	if (no_collision && inputs->keyboard.is_pressed(GLFW_KEY_A)) {
 		camera_model.manipulator_rotate_roll_pitch_yaw(0, 0, -angle_magnitude);
-		player->model.translation = distance * camera_model.front() + camera_model.position() - vec3(0, 0, 0.04f);
-		player->model.rotation = rotation_transform::rotation_transform(camera_model.orientation_camera);
+		
+		// if (possible_move(camera_model.position_camera.x, camera_model.position_camera.y)) cout << true << endl;
+		// if (!possible_move(camera_model.position_camera.x, camera_model.position_camera.y))
+		// 	camera_model.manipulator_rotate_roll_pitch_yaw(0, 0, angle_magnitude);
+		//player->model.translation = distance * camera_model.front() + camera_model.position() - vec3(0, 0, 0.04f);
+		//player->model.rotation = rotation_transform::rotation_transform(camera_model.orientation_camera);
 	}
 	if (no_collision && inputs->keyboard.is_pressed(GLFW_KEY_D)) {
 		camera_model.manipulator_rotate_roll_pitch_yaw(0, 0, angle_magnitude);
-		player->model.translation = distance * camera_model.front() + camera_model.position() - vec3(0, 0, 0.04f);
-		player->model.rotation = rotation_transform::rotation_transform(camera_model.orientation_camera);
+		// cout << possible_move(camera_model.position_camera.x, camera_model.position_camera.y) << endl;
+		// if (!possible_move(camera_model.position_camera.x, camera_model.position_camera.y))
+		//	camera_model.manipulator_rotate_roll_pitch_yaw(0, 0, -angle_magnitude);
+		//player->model.translation = distance * camera_model.front() + camera_model.position() - vec3(0, 0, 0.04f);
+		//player->model.rotation = rotation_transform::rotation_transform(camera_model.orientation_camera);
 	}
 	
 
 	// With arrows
 	if (inputs->keyboard.ctrl == false) { //update position player 
-		if (inputs->keyboard.up)
-			if (check_wall(player->model.translation.x - magnitude * cos(angle),
-				player->model.translation.y - magnitude * sin(angle)))
-			{
-				camera_model.manipulator_translate_front(-magnitude);
-				player->model.translation.x += -magnitude * cos(angle);
-				player->model.translation.y += -magnitude * sin(angle);
-			}
-		if (inputs->keyboard.down)
-			if (check_wall(player->model.translation.x + magnitude * cos(angle),
-				player->model.translation.y + magnitude * sin(angle)))
-			{
-				camera_model.manipulator_translate_front(magnitude);
-				player->model.translation.x += magnitude * cos(angle);
-				player->model.translation.y += magnitude * sin(angle);
-			}
+		if (inputs->keyboard.up) {
+			vec3 new_position = camera_model.position_camera + camera_model.front() * magnitude;
+			if (possible_move(new_position.x, new_position.y))
+				camera_model.position_camera = new_position;
+		}
+		if (inputs->keyboard.down) {
+			vec3 new_position = camera_model.position_camera - camera_model.front() * magnitude;
+			if (possible_move(new_position.x, new_position.y))
+				camera_model.position_camera = new_position;
+		}
 		if (inputs->keyboard.left)
 			camera_model.manipulator_rotate_roll_pitch_yaw(0, 0, -angle_magnitude);
-			if (angle >= 360)
-			{
-				angle = 360 - angle; 
-
-			}
-			else {
-				angle += -angle_magnitude;
-			}
 		if (inputs->keyboard.right)
 			camera_model.manipulator_rotate_roll_pitch_yaw(0, 0, angle_magnitude);
-			if (angle >= 360)
-			{
-				angle = 360 - angle;
-
-			}
-			else {
-				angle += -angle_magnitude;
-			}
 	}
 	else {
 		if (inputs->keyboard.up)
@@ -143,8 +134,6 @@ void maze_camera_controller::idle_frame(mat4& camera_matrix_view)
 			camera_model.manipulator_rotate_roll_pitch_yaw(-angle_magnitude, 0, 0);
 	}
 
-
-
 	camera_matrix_view = camera_model.matrix_view();
 }
 
@@ -156,28 +145,45 @@ void maze_camera_controller::set_player(mesh_drawable& _player) {
 
 bool maze_camera_controller::check_wall(float x, float y)
 {
-	//int col = std::floor(x); // donne la pose de la col et rox dans le lab 
-	//int row = std::floor(y);
+	int col = std::floor(x); // donne la pose de la col et rox dans le lab 
+	int row = std::floor(y);
 
-	//if (x+0.5 >= row+0.5 && maze[row][col].walls[0]) //up
-	//{
-	//	return true; 
-	//}
-	//else if (x - 0.5 <= row - 0.5 && maze[row][col].walls[1]) 
-	//{
-	//	return true; 
+	if (x+0.5 >= row+0.5 && maze[row][col].walls[0]) //up
+	{
+		return true; 
+	}
+	else if (x - 0.5 <= row - 0.5 && maze[row][col].walls[1]) 
+	{
+		return true; 
 
-	//}
-	//else if (y + 0.5 >= col + 0.5 && maze[row][col].walls[3])
-	//{
-	//	return true; 
-	//}
-	//else if (y + 0.5 >= col + 0.5 && maze[row][col].walls[3])
-	//{
-	//	return true; 
-	//}
-	//else {
-	//	return false; 
-	//}
-	return false;
-};
+	cout << "up  " << up << " left  " << left << endl;
+	cout << "x  " << x << " y  " << y << endl;
+
+	// C'est un peu compliqué ici parce que les indices de la matrices sont inversés...
+	int i = std::round(HEIGHT / 2 -  up  + h_half); // round to the nearest integer
+	int j = std::round(WIDTH  / 2 + left + w_half); // round to the nearest integer
+
+	cout << "i  " << i << "  j  " << j << endl;
+
+	float d_min = 0.05f; // epaisseur du mur / 2 plus un epsilon
+
+	cout << "up  " << up - y << "  left  " << x - left << "  down  " << y - up + 1 << "  right  " << - x + left + 1 << endl;
+	cout << "walls up " << (*maze_v)[i][j].walls[0] << " down " << (*maze_v)[i][j].walls[1] << " left " << (*maze_v)[i][j].walls[2] << " right " << (*maze_v)[i][j].walls[3] << endl;
+	// up collision
+	if ((up - y < d_min) && (*maze_v)[i][j].walls[0])
+		return false;
+	// down collision
+	if ((y - up + 1 < d_min) && (*maze_v)[i][j].walls[1])
+		return false;
+	// left collision
+	if ((x - left < d_min) && (*maze_v)[i][j].walls[2])
+		return false;
+	// right collision
+	if ((left + 1 - x < d_min) && (*maze_v)[i][j].walls[3])
+		return false;
+	
+	//cout << "no collision" << endl;
+	return true;
+
+	// return false;
+}
