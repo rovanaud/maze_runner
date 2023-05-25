@@ -78,11 +78,23 @@ void scene_structure::initialize() {
 
 	// Sphere used to display the position of a light
 	sphere_light.initialize_data_on_gpu(mesh_primitive_sphere(0.2f));
+
+	// Remove warnings for unset uniforms
+	cgp_warning::max_warning = 0;
+
+	// Load the custom shader
+	/*opengl_shader_structure shader_custom;
+	shader_custom.load(
+		project::path + "shaders/shading_custom/vert.glsl",
+		project::path + "shaders/shading_custom/frag.glsl");*/
+
+	/*maze.shader = shader_custom; */
 	
 }
 
 void scene_structure::display_frame()
 {
+	timer.update();
 
 	// Set additional uniform parameters to the shader
 	environment.uniform_generic.uniform_float["ambiant"] = gui.ambiant;
