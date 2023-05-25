@@ -67,7 +67,7 @@ struct scene_structure : cgp::scene_inputs_generic {
 	void keyboard_event();
 	void idle_frame();
 
-	bool collision_detection();
+	// bool collision_detection();
 
 };
 
