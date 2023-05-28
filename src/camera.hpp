@@ -1,5 +1,5 @@
 #include "cgp/cgp.hpp"
-#include "generateMaze.hpp"
+#include "util.hpp"
 
 using namespace cgp;
 using namespace std;
@@ -13,11 +13,11 @@ struct maze_camera_controller : camera_controller_first_person
 {
 	camera_first_person camera_model;
 
-	mesh_drawable *player;
+	//mesh_drawable *player;
 
-	mesh_drawable *maze_d;
+	//mesh_drawable *maze_d;
 
-	vector<vector<Cell>> *maze_v;
+	//vector<vector<Cell>> *maze_v;
 
 	bool no_collision = true;
 
@@ -37,17 +37,15 @@ struct maze_camera_controller : camera_controller_first_person
 	void idle_frame(mat4& camera_matrix_view);
 
 	// set player
-	void set_player(mesh_drawable& player);
+	/*void set_player(mesh_drawable& player);
 
 	int possible_move(float x, float y);
 
-	void set_maze(vector<vector<Cell>>& maze_v, mesh_drawable& maze_d);
+	void set_maze(vector<vector<Cell>>& maze_v, mesh_drawable& maze_d);*/
 
 private:
 	bool is_cursor_trapped = false; // true = cursor captured (/infinite motion), false = cursor free
 	float angle;
-	bool check_wall(float x, float y);
-
 //public: 
 //	std:: vector<vector<Cell>> maze;
 //	Player player1;
