@@ -15,16 +15,8 @@ using cgp::timer_basic;
 
 // Variables associated to the GUI
 struct gui_parameters {
-	bool display_frame = true;
+	bool display_frame = false;
 	bool display_wireframe = false;
-
-	vec3 light_color = { 1,1,1 };
-	vec3 light_position = { -2, 2, 2 };
-
-	float ambiant = 0.5;
-	float diffuse = 0.8;
-	float specular = 0.5;
-	float specular_exp = 100;
 };
 
 // The structure of the custom scene
@@ -54,6 +46,8 @@ struct scene_structure : cgp::scene_inputs_generic {
 
 
 	mesh_drawable sphere_light;
+
+	mesh_drawable sphere_light1;
 
 
 	cgp::mesh_drawable maze;
