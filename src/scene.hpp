@@ -4,7 +4,7 @@
 #include "cgp/cgp.hpp"
 #include "environment.hpp"
 #include "camera.hpp"
-#include "generateMaze.hpp"
+#include "util.hpp"
 
 // This definitions allow to use the structures: mesh, mesh_drawable, etc. without mentionning explicitly cgp::
 using cgp::mesh;
@@ -43,17 +43,9 @@ struct scene_structure : cgp::scene_inputs_generic {
 	// ****************************** //
 
 	//cgp::mesh_drawable maze;
+	cgp::mesh_drawable mazeMesh;
 
-
-	mesh_drawable sphere_light;
-
-	mesh_drawable sphere_light1;
-
-
-	cgp::mesh_drawable maze;
-	vector<vector<Cell>> maze_test;
-
-	cgp::mesh_drawable player;
+	vector<cgp::mesh_drawable> beasts;
 
 	cgp::hierarchy_mesh_drawable hierarchy;
 	// ****************************** //
