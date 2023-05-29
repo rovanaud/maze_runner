@@ -282,6 +282,79 @@ namespace cgp {
     vector<vec2> getConnectedPoint(int i) {
         return connectedPoints[i];
     }
+
+    hierarchy_mesh_drawable draw_spider(cgp::hierarchy_mesh_drawable& spider)
+    {
+        cout << '5' << std::endl;
+
+        mesh_drawable ellipsoid;
+        mesh_drawable sphere;
+        mesh_drawable sphere_1;
+
+        mesh_drawable cylinder_leg;
+        mesh_drawable cylinder_foot;
+
+        // Create the geometry of the meshes
+        //   Note: this geometry must be set in their local coordinates with respect to their position in the hierarchy (and with respect to their animation)
+
+
+        ellipsoid.initialize_data_on_gpu(mesh_primitive_ellipsoid({ 0.08 ,0.05,0.05 }));
+        sphere.initialize_data_on_gpu(mesh_primitive_sphere(0.03f));
+        cylinder_leg.initialize_data_on_gpu(mesh_primitive_cylinder(0.005f, { 0,0,0 }, { 0,0,0.05 }));
+        cylinder_foot.initialize_data_on_gpu(mesh_primitive_cylinder(0.005f, { 0,0,0 }, { 0,0,0.1 }));
+
+
+        sphere_1.initialize_data_on_gpu(mesh_primitive_sphere(0.005f));
+
+
+        // Set the color of some elements
+
+        vec3 orange = { 1,0.5,0 };
+        vec3 black = { 0,0,0 };
+        sphere_1.material.color = orange;
+
+        cylinder_leg.material.color = black;
+        cylinder_foot.material.color = black;
+
+        ellipsoid.material.color = black;
+        sphere.material.color = black;
+
+        // Add the elements in the hierarchy
+        //   The syntax is hierarchy.add(mesh_drawable, "name of the parent element", [optional: local translation in the hierarchy])
+        //   Notes: 
+        //     - An element must necessarily be added after its parent
+        //     - The first element (without explicit name of its parent) is assumed to be the root.
+
+        cout << '6' << std::endl;
+
+        spider.add(ellipsoid, "body");
+        spider.add(sphere, "head", "body", { 0.1,0,0.02 });
+        spider.add(sphere_1, "eye1", "head", { 0.02 ,-0.015,0.01 });
+        spider.add(sphere_1, "eye2", "head", { 0.02 ,0.015,0.01 });
+
+        spider.add(cylinder_leg, "leg_1", "body", { 0 ,0.03,0 }, rotation_transform::from_axis_angle({ 1,0,0 }, -1));
+        spider.add(cylinder_foot, "foot_1", "leg_1", { 0,-0.004,0.048 });
+
+        spider.add(cylinder_leg, "leg_2", "body", { 0.04 ,0.03,0 }, rotation_transform::from_axis_angle({ 1,0,0 }, -1));
+        spider.add(cylinder_foot, "foot_2", "leg_2", { 0,-0.004,0.048 });
+
+        spider.add(cylinder_leg, "leg_3", "body", { -0.04 ,0.03,0 }, rotation_transform::from_axis_angle({ 1,0,0 }, -1));
+        spider.add(cylinder_foot, "foot_3", "leg_3", { 0,-0.004,0.048 });
+
+        spider.add(cylinder_leg, "leg_4", "body", { 0 ,-0.03, 0 }, rotation_transform::from_axis_angle({ 1,0,0 }, 1));
+        spider.add(cylinder_foot, "foot_4", "leg_4", { 0,0.004,0.048 });
+
+        spider.add(cylinder_leg, "leg_5", "body", { -0.04, -0.03 ,0 }, rotation_transform::from_axis_angle({ 1,0,0 }, 1));
+        spider.add(cylinder_foot, "foot_5", "leg_5", { 0,0.004,0.048 });
+
+        spider.add(cylinder_leg, "leg_6", "body", { 0.04 ,-0.03, 0 }, rotation_transform::from_axis_angle({ 1,0,0 }, 1));
+        spider.add(cylinder_foot, "foot_6", "leg_6", { 0,0.004,0.048 });
+
+        cout << '7' << std::endl;
+
+        return spider; 
+
+    }
 }
 
 

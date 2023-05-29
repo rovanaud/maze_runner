@@ -30,13 +30,15 @@ void scene_structure::initialize() {
 	mazeMesh.initialize_data_on_gpu(maze_mesh);
 	mazeMesh.material.color = vec3({ 0.2f, 0.9f, 0.7f });
 
-	beasts = vector<mesh_drawable>(getSizeConnectedPoints());
-	for (int i = 0; i < getSizeConnectedPoints(); i++) {
-		beasts[i].initialize_data_on_gpu(mesh_primitive_sphere(0.01f));
-		beasts[i].material.color = vec3({0.9f, 0.2f, 0.2f});
-		beasts[i].model.translation = .5f * (vec3(getConnectedPoint(i)[0], h)  + vec3(getConnectedPoint(i)[1], h));
-		cout << "beasts " << i + 1 << " : " << beasts[i].model.translation << endl;
-	}
+	/*beasts = vector<hierarchy_mesh_drawable>(getSizeConnectedPoints());*/
+	//for (int i = 0; i < getSizeConnectedPoints(); i++) {
+	//	draw_spider(beasts[i]);
+	//	/*beasts[i].material.color = vec3({0.9f, 0.2f, 0.2f});*/
+	//	beasts[i]["body"].transform_local.translation =  .5f * (vec3(getConnectedPoint(i)[0], h)  + vec3(getConnectedPoint(i)[1], h));
+	//	cout << "beasts " << i + 1 << " : " << beasts[i]["body"].transform_local.translation << endl;
+	//}
+
+	draw_spider(beasts);
 	
 	// Finally, setup the camera
 	first_person = true;
@@ -67,7 +69,9 @@ void scene_structure::display_frame()
 {
 	timer.update();
 
-	draw(sphere_light, environment);
+	float h = .50f;
+
+	//draw(sphere_light, environment);
 
 	// Set the light to the current position of the camera
 	if (first_person) 
@@ -75,7 +79,6 @@ void scene_structure::display_frame()
 	else
 		environment.light = camera_control.camera_model.position();
 
-	
 	
 	//if (gui.display_frame)
 	//	draw(global_frame, environment);
@@ -85,7 +88,37 @@ void scene_structure::display_frame()
 	// draw(hierarchy, environment);
 	draw(mazeMesh, environment);
 	
-	for (int i = 0; i < getSizeConnectedPoints(); i++) draw(beasts[i], environment);
+	for (int i = 0; i < getSizeConnectedPoints(); i++)
+	{
+
+		vector<vec2> points = getConnectedPoint(i);
+		vec3 p1 = vec3(points[0], 0.25f);
+		vec3 p2 = vec3(points[1], 0.25f);
+		vec3 m = 0.5f * (p2 + p1);
+		vec3 v = 0.5f * (p2 - p1);
+
+		beasts["body"].transform_local.translation = .5f * (vec3(getConnectedPoint(i)[0], h) + vec3(getConnectedPoint(i)[1], h))
+													 + m + cos(timer.t) * v + vec3(0, 0, 0.25f * sin(timer.t));
+
+		// Apply transformation to some elements of the hierarchy
+
+		beasts["head"].transform_local.rotation = rotation_transform::from_axis_angle({ 0,1,0 }, 0.3 * cos(-2 * timer.t));
+		beasts["foot_1"].transform_local.rotation = rotation_transform::from_axis_angle({ 0,1, 1 }, 3 + 0.4 * cos(-3 * timer.t));
+		beasts["foot_2"].transform_local.rotation = rotation_transform::from_axis_angle({ 0,1, 1 }, 3 + 0.4 * cos(-3 * timer.t));
+		beasts["foot_3"].transform_local.rotation = rotation_transform::from_axis_angle({ 0,1, 1 }, 3 + 0.4 * cos(-3 * timer.t));
+		beasts["foot_4"].transform_local.rotation = rotation_transform::from_axis_angle({ 0,-1, 1 }, 3 + 0.4 * cos(-3 * timer.t));
+		beasts["foot_5"].transform_local.rotation = rotation_transform::from_axis_angle({ 0,-1, 1 }, 3 + 0.4 * cos(-3 * timer.t));
+		beasts["foot_6"].transform_local.rotation = rotation_transform::from_axis_angle({ 0,-1, 1 }, 3 + 0.4 * cos(-3 * timer.t));
+
+
+		// This function must be called before the drawing in order to propagate the deformations through the hierarchy
+		beasts.update_local_to_global_coordinates();
+
+		// Draw the hierarchy as a single mesh
+		draw(beasts, environment);
+
+	/*	draw(beasts[i], environment);*/
+	}
 
 	if (gui.display_wireframe){
 		draw_wireframe(mazeMesh, environment);
@@ -95,15 +128,15 @@ void scene_structure::display_frame()
 	timer.update();
 
 	
-	for (int i = 0; i < getSizeConnectedPoints(); i++) {
-		vector<vec2> points = getConnectedPoint(i);
-		vec3 p1 = vec3(points[0], 0.25f);
-		vec3 p2 = vec3(points[1], 0.25f);
-		vec3 m = 0.5f * (p2 + p1);
-		vec3 v = 0.5f * (p2 - p1);
-		beasts[i].model.translation = m + cos(timer.t) * v + vec3(0, 0, 0.25f * sin(timer.t));
-		draw(beasts[i], environment);
-	}
+	//for (int i = 0; i < getSizeConnectedPoints(); i++) {
+	//	vector<vec2> points = getConnectedPoint(i);
+	//	vec3 p1 = vec3(points[0], 0.25f);
+	//	vec3 p2 = vec3(points[1], 0.25f);
+	//	vec3 m = 0.5f * (p2 + p1);
+	//	vec3 v = 0.5f * (p2 - p1);
+	//	beasts[i]["body"].transform_local.translation = m + cos(timer.t) * v + vec3(0, 0, 0.25f * sin(timer.t));
+	//	draw(beasts[i], environment);
+	//}
 	
 }
 
