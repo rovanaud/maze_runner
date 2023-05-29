@@ -54,7 +54,7 @@ void maze_camera_controller::action_keyboard(mat4&)
 void maze_camera_controller::idle_frame(mat4& camera_matrix_view)
 {
 	//cout << "here we are " << endl;
-	
+
 	// Preconditions
 	assert_cgp_no_msg(inputs != nullptr);
 	assert_cgp_no_msg(window != nullptr);
@@ -86,7 +86,7 @@ void maze_camera_controller::idle_frame(mat4& camera_matrix_view)
 	//   twist // no need to check for collision
 	if (no_collision && inputs->keyboard.is_pressed(GLFW_KEY_A)) {
 		camera_model.manipulator_rotate_roll_pitch_yaw(0, 0, -angle_magnitude);
-		
+
 		// if (possible_move(camera_model.position_camera.x, camera_model.position_camera.y)) cout << true << endl;
 		// if (!possible_move(camera_model.position_camera.x, camera_model.position_camera.y))
 		// 	camera_model.manipulator_rotate_roll_pitch_yaw(0, 0, angle_magnitude);
@@ -101,7 +101,7 @@ void maze_camera_controller::idle_frame(mat4& camera_matrix_view)
 		//player->model.translation = distance * camera_model.front() + camera_model.position() - vec3(0, 0, 0.04f);
 		//player->model.rotation = rotation_transform::rotation_transform(camera_model.orientation_camera);
 	}
-	
+
 
 	// With arrows
 	if (inputs->keyboard.ctrl == false) { //update position player 

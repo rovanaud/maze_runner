@@ -65,6 +65,10 @@ void scene_structure::initialize() {
 
 void scene_structure::display_frame()
 {
+	timer.update();
+
+	draw(sphere_light, environment);
+
 	// Set the light to the current position of the camera
 	if (first_person) 
 		environment.light = camera_controller_first_person.camera_model.position(); //comment faire pour positionner la caméra à l'endroit souhaité ? 
@@ -105,8 +109,9 @@ void scene_structure::display_frame()
 
 void scene_structure::display_gui()
 {
-	ImGui::Checkbox("Frame", &gui.display_frame);
-	ImGui::Checkbox("Wireframe", &gui.display_wireframe);
+	/*ImGui::Checkbox("Frame", &gui.display_frame);
+	ImGui::Checkbox("Wireframe", &gui.display_wireframe);*/
+
 }
 
 void scene_structure::mouse_move_event()
