@@ -5,6 +5,7 @@
 #include "environment.hpp"
 #include "camera.hpp"
 #include "util.hpp"
+#include "key_positions_structure.hpp"
 
 // This definitions allow to use the structures: mesh, mesh_drawable, etc. without mentionning explicitly cgp::
 using cgp::mesh;
@@ -12,6 +13,7 @@ using cgp::mesh_drawable;
 using cgp::vec3;
 using cgp::numarray;
 using cgp::timer_basic;
+
 
 // Variables associated to the GUI
 struct gui_parameters {
@@ -45,15 +47,18 @@ struct scene_structure : cgp::scene_inputs_generic {
 	//cgp::mesh_drawable maze;
 	cgp::mesh_drawable mazeMesh;
 
-	/*vector<cgp::hierarchy_mesh_drawable> beasts;*/
-
-	hierarchy_mesh_drawable beasts;
-
 	// ****************************** //
 	// Functions
 	// ****************************** //
 
 	bool first_person = true;
+
+
+	// A helper structure used to store and display the key positions/time
+
+	keyframe_structure keyframe;
+
+	cgp::timer_interval timer1;
 
 	timer_basic timer;
 
@@ -66,8 +71,7 @@ struct scene_structure : cgp::scene_inputs_generic {
 	void mouse_click_event();
 	void keyboard_event();
 	void idle_frame();
-
-	// bool collision_detection();
+	vector<vec3> generatePath3D(double cubeSize, double minDistance);
 
 };
 
