@@ -60,7 +60,7 @@ void scene_structure::initialize() {
 	mazeMesh.material.color = vec3({ 0.2f, 0.9f, 0.7f });
 
 	// Finally, setup the camera
-	first_person = false;
+	first_person = true;
 	if (first_person) {
 		camera_controller_first_person.initialize(inputs, window);
 		// mazeMesh.material.alpha = 0.2f;
@@ -80,9 +80,9 @@ void scene_structure::initialize() {
 		camera_control.look_at(vec3(0, 0, 20), vec3(0, 0, 0), vec3(0, 0, 1));
 	}
 
-	//mazeMesh.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/texture_grass.jpg",
-	//	GL_MIRRORED_REPEAT,
-	//	GL_MIRRORED_REPEAT);
+	mazeMesh.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/texture_grass.jpg",
+		GL_MIRRORED_REPEAT,
+		GL_MIRRORED_REPEAT);
 }
 
 void scene_structure::display_frame()

@@ -125,12 +125,12 @@ void main()
 	vec3 color_shading = (Ka + Kd * diffuse_component) * color_object + Ks * specular_component * vec3(1.0, 1.0, 1.0);
 	
 	// Output color, with the alpha component
-	FragColor = vec4(color_shading, material.alpha * color_image_texture.a); //without fog
+	//FragColor = vec4(color_shading, material.alpha * color_image_texture.a); //without fog
 
 	float distance = length(fragment.position - camera_position);
 
 	float fogAmount = 1.0 - exp( -distance );
     vec3  fogColor  = vec3(0.5,0.6,0.7);
 
-	//FragColor =  vec4(mix( color_shading, fogColor, fogAmount ), material.alpha * color_image_texture.a); //with fog 
+	FragColor =  vec4(mix( color_shading, fogColor, fogAmount ), material.alpha * color_image_texture.a); //with fog 
 }
