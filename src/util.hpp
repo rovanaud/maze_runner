@@ -32,6 +32,8 @@ namespace cgp{
     mesh draw_wall(vec2 p1, vec2 p2, float h, float e);
     mesh create_maze(float, float);
     vector<vec2> getConnectedPoint(int i);
+
+    hierarchy_mesh_drawable draw_spider(cgp::hierarchy_mesh_drawable& spider);
 }
 
 

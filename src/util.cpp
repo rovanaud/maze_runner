@@ -30,9 +30,6 @@ void initMaze() {
 
 vector <int> generateMaze() {
 
-    mazeVect[0][0].walls[2] = false;
-    mazeVect[0][14].walls[3] = false;
-
     std::stack<std::pair<int, int>> stack;
     int totalCells = WIDTH * HEIGHT;
     int visitedCells = 1;
@@ -102,12 +99,19 @@ vector <int> generateMaze() {
 
 void printMaze() {
     cout << " ";
-    for (int i = 0; i < WIDTH * 2 - 1; i++) {
-        cout << "_";
+    for (int i = 0; i < WIDTH; i++) {
+        if (mazeVect[0][i].walls[0] == true)
+        {
+            cout << "_";
+            cout << ' '; 
+        }
     }
     cout << endl;
     for (int i = 0; i < HEIGHT; i++) {
-        cout << "|";
+        if (mazeVect[i][0].walls[2] == true)
+        {
+            cout << "|";
+        }
         for (int j = 0; j < WIDTH; j++) {
             if (mazeVect[i][j].walls[1]) {
                 cout << "_";
@@ -127,31 +131,6 @@ void printMaze() {
 }
 
 bool possible_move(float x, float y) {
-	/*
-
-		double up = std::round(player.model.translation.y) + 0.5f * (HEIGHT % 2);
-		double left = std::round(player.model.translation.x) - 0.5f * (WIDTH % 2);
-
-		int i = WIDTH / 2  + std::floor(player.model.translation.x - 0.5 * (WIDTH % 2));
-		int j = HEIGHT / 2 - std::ceil(player.model.translation.y - 0.5 * (HEIGHT % 2));
-
-		float d_min = 0.08f;
-		// up collision
-		if ((std::abs(player.model.translation.y - up) < d_min) && mazeVect[i][j].walls[0])
-			return true;
-		// down collision
-		if ((std::abs(player.model.translation.y - up - 1) < d_min) && mazeVect[i][j].walls[1])
-			return true;
-		// left collision
-		if ((std::abs(player.model.translation.x - left) < d_min) && mazeVect[i][j].walls[2])
-			return true;
-		// right collision
-		if ((std::abs(player.model.translation.x - left - 1) < d_min) && mazeVect[i][j].walls[3])
-			return true;
-		cout << "no collision" << endl;
-		return false;
-
-	*/
 
 	double w_half(0.5f * (WIDTH % 2));
 	double h_half((HEIGHT % 2) * .5f);
@@ -203,19 +182,31 @@ namespace cgp {
     void maze_into_connectedPoints() {
         float dx = WIDTH / 2.0f;
         float dy = HEIGHT / 2.0f;
-        connectedPoints.push_back(vector<vec2> { vec2(-dx, dy), vec2(HEIGHT - dx, dy) });
-        connectedPoints.push_back(vector<vec2> { vec2(-dx, dy - 1), vec2(-dx, -WIDTH + dy) });
 
-        for (int i = 0; i < HEIGHT; i++) { //i = y (hauteur) et j = x (longueur)
-            for (int j = 0; j < WIDTH; j++) {
-                if (mazeVect[i][j].walls[1]) {
-                    connectedPoints.push_back(vector<vec2> { vec2(j - dx, dy - (i + 1)), vec2(j - dx + 1, dy - (i + 1)) }); // y en premier et x en deuxième
-                }
-                if (mazeVect[i][j].walls[3]) {
-                    connectedPoints.push_back(vector<vec2> { vec2(j - dx + 1, dy -  i), vec2(j - dx + 1, dy - (i + 1))});
+
+        for (int j = 0; j < WIDTH; j++) {
+            if (mazeVect[0][j].walls[0] == true)
+            {
+                connectedPoints.push_back(vector<vec2> { vec2(j-dx, dy), vec2(j - dx + 1, dy)});
+            }
+        }
+        for (int i = 0; i < HEIGHT; i++) {
+            if (mazeVect[i][0].walls[2] == true && i>0)
+            {
+                connectedPoints.push_back(vector<vec2> { vec2(-dx, dy-i), vec2(-dx, dy - (i+1))}); 
+            }
+            for (int i = 0; i < HEIGHT; i++) { //i = y (hauteur) et j = x (longueur)
+                for (int j = 0; j < WIDTH; j++) {
+                    if (mazeVect[i][j].walls[1]) {
+                        connectedPoints.push_back(vector<vec2> { vec2(j - dx, dy - (i + 1)), vec2(j - dx + 1, dy - (i + 1)) }); // y en premier et x en deuxième
+                    }
+                    if (mazeVect[i][j].walls[3] && !( i==0 && j == 14)) {
+                        connectedPoints.push_back(vector<vec2> { vec2(j - dx + 1, dy - i), vec2(j - dx + 1, dy - (i + 1))});
+                    }
                 }
             }
-    }
+   
+         }
     //return connectedPoints;
 }
     
@@ -281,6 +272,74 @@ namespace cgp {
 
     vector<vec2> getConnectedPoint(int i) {
         return connectedPoints[i];
+    }
+
+    hierarchy_mesh_drawable draw_spider(cgp::hierarchy_mesh_drawable& spider)
+    {
+        mesh_drawable ellipsoid;
+        mesh_drawable sphere;
+        mesh_drawable sphere_1;
+
+        mesh_drawable cylinder_leg;
+        mesh_drawable cylinder_foot;
+
+        // Create the geometry of the meshes
+        //   Note: this geometry must be set in their local coordinates with respect to their position in the hierarchy (and with respect to their animation)
+
+
+        ellipsoid.initialize_data_on_gpu(mesh_primitive_ellipsoid({ 0.008 ,0.005,0.005 }));
+        sphere.initialize_data_on_gpu(mesh_primitive_sphere(0.003f));
+        cylinder_leg.initialize_data_on_gpu(mesh_primitive_cylinder(0.0005f, { 0,0,0 }, { 0,0,0.005 }));
+        cylinder_foot.initialize_data_on_gpu(mesh_primitive_cylinder(0.005f, { 0,0,0 }, { 0,0,0.01 }));
+
+
+        sphere_1.initialize_data_on_gpu(mesh_primitive_sphere(0.0005f));
+
+
+        // Set the color of some elements
+
+        vec3 orange = { 1,0.5,0 };
+        vec3 black = { 0,0,0 };
+        sphere_1.material.color = orange;
+
+        cylinder_leg.material.color = black;
+        cylinder_foot.material.color = black;
+
+        ellipsoid.material.color = black;
+        sphere.material.color = black;
+
+        // Add the elements in the hierarchy
+        //   The syntax is hierarchy.add(mesh_drawable, "name of the parent element", [optional: local translation in the hierarchy])
+        //   Notes: 
+        //     - An element must necessarily be added after its parent
+        //     - The first element (without explicit name of its parent) is assumed to be the root.
+
+
+        spider.add(ellipsoid, "body");
+        spider.add(sphere, "head", "body", { 0.01,0,0.002 });
+        spider.add(sphere_1, "eye1", "head", { 0.002 ,-0.0015,0.001 });
+        spider.add(sphere_1, "eye2", "head", { 0.002 ,0.0015,0.001 });
+
+        spider.add(cylinder_leg, "leg_1", "body", { 0 ,0.003,0 }, rotation_transform::from_axis_angle({ 1,0,0 }, -1));
+        spider.add(cylinder_foot, "foot_1", "leg_1", { 0,-0.0004,0.0048 });
+
+        spider.add(cylinder_leg, "leg_2", "body", { 0.004 ,0.003,0 }, rotation_transform::from_axis_angle({ 1,0,0 }, -1));
+        spider.add(cylinder_foot, "foot_2", "leg_2", { 0,-0.0004,0.0048 });
+
+        spider.add(cylinder_leg, "leg_3", "body", { -0.004 ,0.003,0 }, rotation_transform::from_axis_angle({ 1,0,0 }, -1));
+        spider.add(cylinder_foot, "foot_3", "leg_3", { 0,-0.0004,0.0048 });
+
+        spider.add(cylinder_leg, "leg_4", "body", { 0 ,-0.003, 0 }, rotation_transform::from_axis_angle({ 1,0,0 }, 1));
+        spider.add(cylinder_foot, "foot_4", "leg_4", { 0,0.0004,0.0048 });
+
+        spider.add(cylinder_leg, "leg_5", "body", { -0.004, -0.003 ,0 }, rotation_transform::from_axis_angle({ 1,0,0 }, 1));
+        spider.add(cylinder_foot, "foot_5", "leg_5", { 0,0.0004,0.0048 });
+
+        spider.add(cylinder_leg, "leg_6", "body", { 0.004 ,-0.003, 0 }, rotation_transform::from_axis_angle({ 1,0,0 }, 1));
+        spider.add(cylinder_foot, "foot_6", "leg_6", { 0,0.0004,0.0048 });
+
+        return spider; 
+
     }
 }
 
