@@ -45,9 +45,13 @@ struct scene_structure : cgp::scene_inputs_generic {
 	//cgp::mesh_drawable maze;
 	cgp::mesh_drawable mazeMesh;
 
-	vector<cgp::mesh_drawable> beasts;
+	mesh_drawable beast;
+	vector<vec3> positions;
 
 	cgp::hierarchy_mesh_drawable hierarchy;
+
+	cgp::skybox_drawable skybox;
+
 	// ****************************** //
 	// Functions
 	// ****************************** //

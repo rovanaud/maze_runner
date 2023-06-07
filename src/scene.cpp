@@ -30,13 +30,29 @@ void scene_structure::initialize() {
 	mazeMesh.initialize_data_on_gpu(maze_mesh);
 	mazeMesh.material.color = vec3({ 0.2f, 0.9f, 0.7f });
 
-	beasts = vector<mesh_drawable>(getSizeConnectedPoints());
+	beast.initialize_data_on_gpu(mesh_primitive_sphere(0.01f));
+	positions = vector<vec3>(getSizeConnectedPoints());
 	for (int i = 0; i < getSizeConnectedPoints(); i++) {
-		beasts[i].initialize_data_on_gpu(mesh_primitive_sphere(0.01f));
-		beasts[i].material.color = vec3({0.9f, 0.2f, 0.2f});
-		beasts[i].model.translation = .5f * (vec3(getConnectedPoint(i)[0], h)  + vec3(getConnectedPoint(i)[1], h));
-		cout << "beasts " << i + 1 << " : " << beasts[i].model.translation << endl;
+		//beasts[i].initialize_data_on_gpu(mesh_primitive_sphere(0.01f));
+		//beasts[i].material.color = vec3({0.9f, 0.2f, 0.2f});
+		positions[i]= .5f * (vec3(getConnectedPoint(i)[0], h)  + vec3(getConnectedPoint(i)[1], h));
+		//cout << "beasts " << i + 1 << " : " << beasts[i].model.translation << endl;
 	}
+
+	// sky box
+	image_structure image_skybox_template = image_load_file("assets/skybox_02.jpg");
+	// Other possibilities:
+	//   image_structure image_skybox_template = image_load_file("assets/skybox_02.jpg");
+	//   image_structure image_skybox_template = image_load_file("assets/skybox_debug.png");
+
+
+	// Split the image into a grid of 4 x 3 sub-images
+	std::vector<image_structure> image_grid = image_split_grid(image_skybox_template, 4, 3);
+
+
+	skybox.initialize_data_on_gpu();
+	skybox.texture.initialize_cubemap_on_gpu(image_grid[1], image_grid[7], image_grid[5], image_grid[3], image_grid[10], image_grid[4]);
+	// Look at skybox_debug.png to see the correspondance of the image index
 	
 	// Finally, setup the camera
 	first_person = true;
@@ -65,27 +81,33 @@ void scene_structure::initialize() {
 
 void scene_structure::display_frame()
 {
-	timer.update();
-
-	draw(sphere_light, environment);
+	//draw(sphere_light, environment);
 
 	// Set the light to the current position of the camera
 	if (first_person) 
 		environment.light = camera_controller_first_person.camera_model.position(); //comment faire pour positionner la caméra à l'endroit souhaité ? 
 	else
 		environment.light = camera_control.camera_model.position();
-
-	
 	
 	//if (gui.display_frame)
 	//	draw(global_frame, environment);
 	// update coordinate vefore drawing
 	// hierarchy.update_local_to_global_coordinates();
 
+	//  Must be called before drawing the other shapes and without writing in the Depth Buffer
+	glDepthMask(GL_FALSE); // disable depth-buffer writing
+		draw(skybox, environment);
+	glDepthMask(GL_TRUE);  // re-activate depth-buffer write
+
+	timer.update();
+	
 	// draw(hierarchy, environment);
 	draw(mazeMesh, environment);
 	
-	for (int i = 0; i < getSizeConnectedPoints(); i++) draw(beasts[i], environment);
+	for (int i = 0; i < getSizeConnectedPoints(); i++) {
+		beast.model.translation = positions[i];
+		draw(beast, environment);
+	}
 
 	if (gui.display_wireframe){
 		draw_wireframe(mazeMesh, environment);
@@ -101,8 +123,9 @@ void scene_structure::display_frame()
 		vec3 p2 = vec3(points[1], 0.25f);
 		vec3 m = 0.5f * (p2 + p1);
 		vec3 v = 0.5f * (p2 - p1);
-		beasts[i].model.translation = m + cos(timer.t) * v + vec3(0, 0, 0.25f * sin(timer.t));
-		draw(beasts[i], environment);
+		positions[i] = m + cos(timer.t * 0.02) * v + vec3(0, 0, 0.25f * sin(timer.t) * sin(timer.t));
+		//beast.model.translation = positions[i];
+		//draw(beast, environment);
 	}
 	
 }

@@ -17,6 +17,9 @@ struct environment_structure : environment_generic_structure
 	// A projection structure (perspective or orthogonal projection)
 	mat4 camera_projection;
 
+	// fix
+	mat4 projection;
+
 	// The position of a light
 	vec3 light;
 
